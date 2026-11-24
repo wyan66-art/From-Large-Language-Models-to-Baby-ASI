@@ -24,7 +24,7 @@ The site presents the framework in English and Chinese (toggle in the header), w
 
 | Version | File | Date | Pages |
 |---|---|---|---|
-| **Revised V1 (current formal baseline)** | `Baby_ASI_Revised_V1_Nov_2026.pdf` | Nov 2026 | 17 |
+| **Revised V1 (current formal baseline)** | `Baby_ASI_Revised_V1_Nov_2026.pdf` | Nov 2026 | 12 |
 | V1 (original) | `Baby_ASI_Research_Paper.pdf` | Aug 2026 | 9 |
 
 
@@ -38,7 +38,7 @@ An honest note, stated in the paper itself: the formal model in §6 is a **speci
 
 
 - **V1** (23 Aug 2026, 9 pp): the original paper — ASI as a developmental process; Baby ASI → Developing ASI → Mature ASI; seven-stage program.
-- **Revised V1 / V1.5** (23 Nov 2026, 17 pp): revised after review. New title, expanded formal model, predictions, and safety sections. This is the current formal baseline. It is deliberately **not** called V2.
+- **Revised V1 / V1.5** (23 Nov 2026, 12 pp): revised after review. New title, expanded formal model, predictions, and safety sections. This is the current formal baseline. It is deliberately **not** called V2.
 - **V2.1** (in preparation): centered on **AI Identity Continuity** — model and parameter transition, memory migration, AI forking and branch identity, and validated continuation vs. successor agent. It will also add 2025–2026 references (continual learning, agent memory, world models, model migration, multi-agent research); the current 24 references run through 2024.
 
 
