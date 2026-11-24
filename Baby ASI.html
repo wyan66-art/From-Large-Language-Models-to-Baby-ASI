@@ -1,0 +1,1366 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<meta name="description" content="Baby ASI — a developmental framework for persistent, embodied, continually learning artificial agents. Research paper by Winston Y. Yan, revised November 2026." />
+<link rel="icon" href="data:," />
+<title>Baby ASI — From Large Language Models to Baby ASI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#fcfcfa;
+    --bg-raised:#ffffff;
+    --bg-sink:#f2f1ec;
+    --ink:#191c20;
+    --ink-2:#454b52;
+    --ink-3:#6d747c;
+    --line:#ddd9d0;
+    --line-strong:#c6c1b4;
+    --accent:#0e5a4c;
+    --accent-ink:#0a463b;
+    --accent-soft:#e4efec;
+    --amber:#a96f14;
+    --amber-soft:#f6ecd9;
+    --red:#9c3a2d;
+    --red-soft:#f7e8e4;
+    --code-bg:#f2f1ec;
+    --shadow:0 1px 2px rgba(25,28,32,.05),0 8px 28px rgba(25,28,32,.06);
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#101214;
+      --bg-raised:#171a1d;
+      --bg-sink:#1d2125;
+      --ink:#eceae4;
+      --ink-2:#b9bdc2;
+      --ink-3:#8d939a;
+      --line:#2c3034;
+      --line-strong:#3d4247;
+      --accent:#4fc3ab;
+      --accent-ink:#7fd6c3;
+      --accent-soft:#17302b;
+      --amber:#e0aa4e;
+      --amber-soft:#33270f;
+      --red:#e08a7a;
+      --red-soft:#38201b;
+      --code-bg:#1d2125;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *{transition:none !important;animation:none !important}
+  }
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-size:17px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent);color:#fff}
+  a{color:var(--accent-ink)}
+  button,[role="button"],summary,select,input:not([type="checkbox"],[type="radio"]){min-height:2.75rem}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+
+  /* ---------- top nav ---------- */
+  nav.top{
+    position:sticky;top:0;z-index:50;
+    background:color-mix(in srgb,var(--bg) 88%,transparent);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.top .wrap{display:flex;align-items:center;padding-top:0;padding-bottom:0}
+  nav.top .links{display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+  nav.top .links::-webkit-scrollbar{display:none}
+  nav.top a{
+    color:var(--ink-2);text-decoration:none;font-size:.86rem;font-weight:500;
+    padding:12px 10px;white-space:nowrap;border-bottom:2px solid transparent;
+  }
+  nav.top a:hover{color:var(--ink);border-bottom-color:var(--accent)}
+  nav.top a.pdf-link{margin-left:auto;color:var(--accent-ink);font-weight:600}
+
+  /* ---------- hero ---------- */
+  header.hero{padding:56px 0 8px}
+  .paper-meta{
+    font-family:"IBM Plex Mono",monospace;font-size:.8rem;letter-spacing:.04em;
+    color:var(--ink-3);display:flex;flex-wrap:wrap;gap:8px 18px;margin-bottom:22px;
+  }
+  .paper-meta b{color:var(--accent-ink);font-weight:600}
+  h1{
+    font-family:"Newsreader",Georgia,serif;font-weight:600;
+    font-size:clamp(2.3rem,6vw,3.9rem);line-height:1.08;letter-spacing:-.01em;
+    margin:0 0 14px;max-width:16em;
+  }
+  h1 .thin{font-weight:400;font-style:italic}
+  .subtitle{
+    font-family:"Newsreader",Georgia,serif;font-size:clamp(1.15rem,2.6vw,1.45rem);
+    color:var(--ink-2);line-height:1.45;margin:0 0 20px;max-width:38em;
+  }
+  .byline{font-size:.95rem;color:var(--ink-2);margin:0 0 30px}
+  .byline b{color:var(--ink)}
+  .abstract{
+    border-top:2px solid var(--ink);border-bottom:1px solid var(--line);
+    padding:22px 0 24px;margin-bottom:30px;
+    display:grid;grid-template-columns:110px 1fr;gap:8px 22px;
+  }
+  .abstract .lbl{
+    font-family:"IBM Plex Mono",monospace;font-size:.78rem;font-weight:600;
+    letter-spacing:.12em;color:var(--accent-ink);padding-top:5px;
+  }
+  .abstract p{margin:0;font-size:1.02rem}
+  .abstract p + p{margin-top:10px}
+  .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px}
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    min-height:48px;padding:10px 20px;border-radius:10px;
+    font-weight:600;font-size:.95rem;text-decoration:none;cursor:pointer;
+    border:1px solid var(--ink);transition:transform .12s ease,background .12s ease;
+  }
+  .btn:active{transform:scale(.98)}
+  .btn.primary{background:var(--ink);color:var(--bg)}
+  .btn.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .btn.ghost:hover{border-color:var(--accent);color:var(--accent-ink)}
+  .btn svg{flex:none}
+  .contrib{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:34px 0 6px;
+  }
+  .contrib .c{
+    background:var(--bg-raised);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 18px 14px;box-shadow:var(--shadow);
+  }
+  .contrib .n{
+    font-family:"IBM Plex Mono",monospace;font-size:1.7rem;font-weight:600;color:var(--accent-ink);line-height:1;
+  }
+  .contrib .t{font-weight:600;margin-top:8px;font-size:.98rem}
+  .contrib .d{color:var(--ink-2);font-size:.88rem;margin-top:3px;line-height:1.5}
+
+  /* ---------- sections ---------- */
+  section{padding:52px 0 6px}
+  .sec-head{margin-bottom:26px}
+  .sec-num{
+    font-family:"IBM Plex Mono",monospace;font-size:.8rem;font-weight:600;
+    letter-spacing:.14em;color:var(--accent-ink);margin-bottom:8px;
+  }
+  h2{
+    font-family:"Newsreader",Georgia,serif;font-weight:600;
+    font-size:clamp(1.7rem,4vw,2.3rem);line-height:1.15;margin:0 0 10px;letter-spacing:-.01em;
+  }
+  .sec-head p{color:var(--ink-2);max-width:44em;margin:0}
+  h3{font-family:"Newsreader",Georgia,serif;font-size:1.3rem;font-weight:600;margin:0 0 8px}
+  p{margin:0 0 14px}
+  .muted{color:var(--ink-2)}
+  .small{font-size:.88rem}
+
+  /* two answers */
+  .versus{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:8px 0 20px}
+  .vcard{border:1px solid var(--line);border-radius:var(--radius);padding:22px;background:var(--bg-raised)}
+  .vcard.dim{opacity:.92;background:var(--bg-sink)}
+  .vcard .tag{
+    font-family:"IBM Plex Mono",monospace;font-size:.74rem;font-weight:600;letter-spacing:.1em;
+    display:inline-block;padding:4px 10px;border-radius:999px;margin-bottom:12px;
+  }
+  .tag.scaling{background:var(--bg-sink);color:var(--ink-2);border:1px solid var(--line-strong)}
+  .vcard.dim .tag.scaling{background:var(--bg-raised)}
+  .tag.dev{background:var(--accent-soft);color:var(--accent-ink)}
+  .vcard ul{margin:10px 0 0;padding-left:19px;color:var(--ink-2);font-size:.95rem}
+  .vcard ul li{margin-bottom:5px}
+  .vcard h3{margin-bottom:6px}
+
+  .cycle{
+    display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+    background:var(--bg-raised);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 20px;margin:6px 0 8px;box-shadow:var(--shadow);
+  }
+  .cycle .step{font-weight:600;font-size:.95rem}
+  .cycle .arr{color:var(--accent);font-weight:700}
+  .cycle .loop-note{width:100%;font-size:.86rem;color:var(--ink-3);margin-top:6px}
+
+  /* definition */
+  .defbox{
+    border:1.5px solid var(--accent);border-radius:var(--radius);
+    background:var(--accent-soft);padding:26px 28px;margin-bottom:20px;
+  }
+  .defbox .dlbl{font-family:"IBM Plex Mono",monospace;font-size:.76rem;font-weight:600;letter-spacing:.14em;color:var(--accent-ink);margin-bottom:10px}
+  .defbox p{font-size:1.06rem;margin:0}
+  .deflist{list-style:none;margin:18px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px 26px}
+  .deflist li{display:flex;gap:10px;font-size:.95rem;align-items:flex-start}
+  .deflist .k{
+    font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--accent-ink);
+    background:var(--bg-raised);border:1px solid var(--line);border-radius:7px;
+    min-width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;flex:none;margin-top:1px;
+  }
+  .stages3{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:10px;margin:22px 0}
+  .stage3{
+    border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-raised);
+    padding:16px 18px;text-align:left;
+  }
+  .stage3 .sn{font-family:"Newsreader",Georgia,serif;font-weight:700;font-size:1.12rem}
+  .stage3 .sd{font-size:.86rem;color:var(--ink-2);margin-top:4px;line-height:1.5}
+  .stage3-arrow{align-self:center;color:var(--accent);font-size:1.3rem;font-weight:700}
+  .hypothesis{
+    border-left:4px solid var(--amber);background:var(--amber-soft);
+    border-radius:0 var(--radius) var(--radius) 0;padding:20px 24px;margin:20px 0;
+  }
+  .hypothesis .hlbl{font-family:"IBM Plex Mono",monospace;font-size:.76rem;font-weight:600;letter-spacing:.12em;color:var(--amber);margin-bottom:8px}
+  .hypothesis p{margin:0;font-size:1.02rem}
+
+  /* architecture explorer */
+  .arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+  .arch-diagram{
+    background:var(--bg-raised);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;box-shadow:var(--shadow);
+  }
+  .arch-layer-lbl{font-family:"IBM Plex Mono",monospace;font-size:.72rem;font-weight:600;letter-spacing:.12em;color:var(--ink-3);margin:14px 0 8px}
+  .arch-layer-lbl:first-child{margin-top:0}
+  .comp-row{display:flex;flex-wrap:wrap;gap:8px}
+  button.comp{
+    font-family:inherit;font-size:.92rem;font-weight:600;cursor:pointer;
+    border:1.5px solid var(--line-strong);background:var(--bg);color:var(--ink);
+    border-radius:10px;padding:10px 14px;min-height:44px;
+    display:inline-flex;align-items:center;gap:8px;transition:border-color .12s,background .12s;
+  }
+  button.comp .sym{font-family:"IBM Plex Mono",monospace;color:var(--accent-ink);font-weight:600}
+  button.comp:hover{border-color:var(--accent)}
+  button.comp[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+  button.comp.core{width:100%;justify-content:center;font-size:1.02rem;padding:14px;background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  button.comp.core .sym{color:var(--amber)}
+  button.comp.core[aria-pressed="true"]{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+  button.comp.gov{width:100%;justify-content:center;border-style:dashed}
+  .arch-detail{
+    background:var(--bg-raised);border:1px solid var(--line);border-radius:var(--radius);
+    padding:24px;box-shadow:var(--shadow);min-height:280px;
+  }
+  .arch-detail .sym-big{
+    font-family:"IBM Plex Mono",monospace;font-size:.85rem;font-weight:600;color:var(--accent-ink);
+    letter-spacing:.08em;margin-bottom:6px;
+  }
+  .arch-detail p{color:var(--ink-2);font-size:.97rem}
+  .arch-detail .upd{
+    font-family:"IBM Plex Mono",monospace;font-size:.84rem;background:var(--code-bg);
+    border-radius:8px;padding:10px 13px;color:var(--ink);overflow-x:auto;white-space:nowrap;
+  }
+  .formula-line{
+    font-family:"Newsreader",Georgia,serif;font-size:1.12rem;text-align:center;
+    padding:16px 10px;margin:18px 0 4px;color:var(--ink);
+  }
+
+  /* formal model */
+  .var-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:18px 0}
+  .varcard{background:var(--bg-raised);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .varcard .vf{font-family:"Newsreader",Georgia,serif;font-size:1.25rem;font-weight:600;margin-bottom:6px}
+  .varcard .vf i{font-style:italic}
+  .varcard p{color:var(--ink-2);font-size:.93rem;margin:0}
+  .objective{
+    background:var(--bg-sink);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 24px;margin:16px 0;font-size:.97rem;
+  }
+  .objective .of{
+    font-family:"Newsreader",Georgia,serif;font-size:1.15rem;text-align:center;margin-bottom:12px;line-height:1.7;
+  }
+  .chartbox{
+    background:var(--bg-raised);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px;box-shadow:var(--shadow);margin:20px 0;
+  }
+  .chart-toggle{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .chart-toggle button{
+    font-family:inherit;font-weight:600;font-size:.9rem;cursor:pointer;min-height:44px;
+    border:1.5px solid var(--line-strong);background:var(--bg);color:var(--ink);
+    border-radius:999px;padding:8px 18px;
+  }
+  .chart-toggle button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink)}
+  .chartbox svg{width:100%;height:auto;display:block}
+  .chart-note{font-size:.84rem;color:var(--ink-3);margin-top:10px}
+
+  /* components detail */
+  .comp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .ccard{background:var(--bg-raised);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .ccard .cn{font-family:"IBM Plex Mono",monospace;font-size:.76rem;font-weight:600;color:var(--accent-ink);letter-spacing:.1em;margin-bottom:8px}
+  .ccard p{color:var(--ink-2);font-size:.92rem;margin:0}
+  .ccard h3{font-size:1.12rem}
+
+  /* birth vs emergence */
+  .birth-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .bcard{border-radius:var(--radius);padding:24px;border:1px solid var(--line);background:var(--bg-raised)}
+  .bcard.birth{border-top:5px solid var(--accent)}
+  .bcard.emerge{border-top:5px solid var(--amber)}
+  .bcard .blbl{font-family:"IBM Plex Mono",monospace;font-size:.76rem;font-weight:600;letter-spacing:.12em;margin-bottom:8px}
+  .bcard.birth .blbl{color:var(--accent-ink)}
+  .bcard.emerge .blbl{color:var(--amber)}
+  .bcard h3{font-size:1.35rem}
+  .bcard ul{list-style:none;margin:14px 0 0;padding:0}
+  .bcard ul li{padding:7px 0 7px 26px;position:relative;font-size:.95rem;color:var(--ink-2);border-top:1px solid var(--line)}
+  .bcard ul li::before{content:"—";position:absolute;left:2px;color:var(--accent);font-weight:700}
+  .bcard.emerge ul li::before{color:var(--amber)}
+  .birth-note{margin-top:16px;font-size:.94rem;color:var(--ink-2)}
+
+  /* predictions */
+  .pred-layout{display:grid;grid-template-columns:230px 1fr;gap:18px;align-items:start}
+  .pred-tabs{display:flex;flex-direction:column;gap:8px}
+  button.pred-tab{
+    font-family:inherit;text-align:left;cursor:pointer;min-height:52px;
+    border:1.5px solid var(--line);background:var(--bg-raised);color:var(--ink);
+    border-radius:11px;padding:10px 14px;display:flex;gap:11px;align-items:baseline;
+    transition:border-color .12s,background .12s;
+  }
+  button.pred-tab .pn{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--accent-ink);flex:none}
+  button.pred-tab .pt{font-size:.88rem;font-weight:500;line-height:1.35}
+  button.pred-tab:hover{border-color:var(--accent)}
+  button.pred-tab[aria-selected="true"]{border-color:var(--accent);background:var(--accent-soft)}
+  .pred-detail{
+    background:var(--bg-raised);border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px;box-shadow:var(--shadow);
+  }
+  .pred-detail h3{font-size:1.4rem;margin-bottom:4px}
+  .pred-rows{margin-top:16px;display:grid;gap:0}
+  .pred-row{display:grid;grid-template-columns:120px 1fr;gap:6px 18px;padding:13px 0;border-top:1px solid var(--line)}
+  .pred-row .rl{font-family:"IBM Plex Mono",monospace;font-size:.76rem;font-weight:600;letter-spacing:.1em;padding-top:3px}
+  .pred-row.metric .rl{color:var(--accent-ink)}
+  .pred-row.baseline .rl{color:var(--ink-3)}
+  .pred-row.refuted{background:var(--red-soft);margin:0 -14px;padding-left:14px;padding-right:14px;border-radius:8px;border-top:none}
+  .pred-row.refuted .rl{color:var(--red)}
+  .pred-row p{margin:0;font-size:.97rem}
+  .pred-key{
+    margin-top:18px;border:1px dashed var(--line-strong);border-radius:var(--radius);
+    padding:16px 20px;font-size:.93rem;color:var(--ink-2);
+  }
+  .pred-key b{color:var(--ink)}
+
+  /* stages */
+  .stage-list{display:grid;gap:10px}
+  .stage-item{border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-raised);overflow:hidden}
+  .stage-item summary{
+    cursor:pointer;list-style:none;display:flex;align-items:center;gap:14px;
+    padding:16px 20px;min-height:56px;
+  }
+  .stage-item summary::-webkit-details-marker{display:none}
+  .stage-item summary:hover{background:var(--bg-sink)}
+  .stage-item .rn{
+    font-family:"Newsreader",Georgia,serif;font-weight:700;font-size:1.25rem;color:var(--accent-ink);
+    min-width:34px;text-align:center;flex:none;
+  }
+  .stage-item .st{font-weight:600;font-size:1.02rem;flex:1}
+  .stage-item .stests{font-family:"IBM Plex Mono",monospace;font-size:.76rem;color:var(--ink-3);flex:none}
+  .stage-item .chev{flex:none;color:var(--ink-3);transition:transform .15s}
+  .stage-item[open ] .chev{transform:rotate(180deg)}
+  .stage-body{padding:4px 20px 20px 68px;display:grid;grid-template-columns:1fr 1fr;gap:8px 26px}
+  .stage-body .sb-lbl{font-family:"IBM Plex Mono",monospace;font-size:.74rem;font-weight:600;letter-spacing:.1em;color:var(--ink-3)}
+  .stage-body p{font-size:.94rem;color:var(--ink-2);margin:0 0 8px}
+  .gate{
+    grid-column:1/-1;background:var(--amber-soft);border-radius:9px;padding:12px 16px;
+    font-size:.93rem;display:flex;gap:10px;align-items:flex-start;
+  }
+  .gate .gl{font-family:"IBM Plex Mono",monospace;font-size:.72rem;font-weight:700;letter-spacing:.1em;color:var(--amber);padding-top:3px;flex:none}
+  .gate p{color:var(--ink);margin:0}
+
+  /* safety */
+  .safety-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .scard{background:var(--bg-raised);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .scard .sn2{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--red);font-size:.8rem;margin-bottom:6px}
+  .scard h3{font-size:1.08rem;font-family:"IBM Plex Sans",sans-serif;font-weight:600}
+  .scard p{color:var(--ink-2);font-size:.93rem;margin:0}
+  .safety-stop{
+    margin-top:16px;background:var(--red-soft);border:1px solid var(--red);border-radius:var(--radius);
+    padding:18px 22px;font-size:1rem;
+  }
+  .safety-stop b{color:var(--red)}
+
+  /* limitations + conclusion */
+  .limits{background:var(--bg-sink);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px}
+  .limits ul{margin:0;padding-left:20px;color:var(--ink-2)}
+  .limits li{margin-bottom:8px}
+  .pathway{
+    display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:18px 0;
+    font-weight:600;font-size:.95rem;
+  }
+  .pathway .pnode{background:var(--bg-raised);border:1px solid var(--line-strong);border-radius:9px;padding:8px 13px}
+  .pathway .parr{color:var(--accent)}
+  .pathway .pnode.final{background:var(--accent);border-color:var(--accent);color:#fff}
+  blockquote.bigq{
+    font-family:"Newsreader",Georgia,serif;font-size:clamp(1.35rem,3.4vw,1.8rem);
+    line-height:1.4;margin:26px 0;padding:0;border:none;font-weight:500;
+  }
+  blockquote.bigq em{color:var(--accent-ink)}
+
+  /* references */
+  .refs{columns:2;column-gap:36px;font-size:.85rem;color:var(--ink-2)}
+  .refs p{margin:0 0 9px;break-inside:avoid;padding-left:26px;text-indent:-26px}
+  .refs .rn2{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-3)}
+
+  footer{
+    margin-top:64px;border-top:2px solid var(--ink);padding:28px 0 48px;
+    font-size:.9rem;color:var(--ink-2);
+  }
+  footer .frow{display:flex;flex-wrap:wrap;gap:10px 30px;justify-content:space-between}
+  footer b{color:var(--ink)}
+  .cite-box{
+    margin-top:18px;background:var(--bg-sink);border:1px solid var(--line);border-radius:10px;
+    padding:14px 16px;font-size:.86rem;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;
+  }
+  .cite-box code{font-family:"IBM Plex Mono",monospace;font-size:.8rem;flex:1;min-width:240px;line-height:1.55}
+  .cite-box button{
+    font-family:inherit;font-weight:600;font-size:.85rem;cursor:pointer;min-height:40px;
+    border:1px solid var(--line-strong);background:var(--bg-raised);color:var(--ink);
+    border-radius:8px;padding:6px 16px;flex:none;
+  }
+  .cite-box button:hover{border-color:var(--accent);color:var(--accent-ink)}
+
+  /* ---------- bilingual (EN + ZH twins) ---------- */
+  .zh{
+    display:block;margin-top:5px;color:var(--ink-2);
+    font-size:.9em;line-height:1.65;font-weight:400;font-style:normal;letter-spacing:0;
+  }
+  .zh-h{font-size:.58em;margin-top:8px;color:var(--ink-2)}
+  .zh-h1{font-size:.42em;margin-top:10px;color:var(--ink-2)}
+  .zh-h3{font-size:.72em;margin-top:3px}
+  .zh-q{font-size:.62em;margin-top:10px}
+  .byline .zh{display:inline;margin:0 0 0 10px}
+  .deflist .zh,.vcard li .zh,li .zh{font-size:.88em}
+  .visitor-badge{margin-top:18px}
+  .visitor-badge img{vertical-align:middle}
+
+  /* ---------- language toggle (EN / 中文) ---------- */
+  .lang-toggle{
+    display:flex;gap:2px;flex:none;align-self:center;margin-left:10px;
+    border:1px solid var(--line-strong);border-radius:999px;padding:3px;
+    background:var(--bg-raised);
+  }
+  .lang-toggle button{
+    font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer;
+    border:none;background:transparent;color:var(--ink-2);
+    border-radius:999px;padding:5px 14px;min-height:34px;line-height:1.2;
+  }
+  .lang-toggle button:hover{color:var(--ink)}
+  .lang-toggle button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+  .zh.inl{display:inline;margin:0;font-size:1em;color:inherit;letter-spacing:inherit}
+  html[data-lang="en"] .zh{display:none !important}
+  html[data-lang="zh"] .en{display:none !important}
+  html[data-lang="en"] .svg-zh{display:none}
+  html[data-lang="zh"] .svg-en{display:none}
+  html[data-lang="zh"] .zh{font-size:1em}
+  html[data-lang="zh"] .zh-h{font-size:.92em;margin-top:2px}
+  html[data-lang="zh"] .zh-h1{font-size:.6em;margin-top:4px}
+  html[data-lang="zh"] .zh-h3{font-size:.95em;margin-top:2px}
+  html[data-lang="zh"] .zh-q{font-size:.8em;margin-top:4px}
+  html[data-lang="zh"] .deflist .zh,html[data-lang="zh"] li .zh{font-size:1em}
+  html[data-lang="zh"] .stage-item .rn{display:none}
+  html[data-lang="zh"] .stage-body{padding-left:20px}
+
+  @media (max-width:820px){
+    .contrib{grid-template-columns:1fr 1fr 1fr;gap:10px}
+    .contrib .c{padding:14px}
+    .contrib .n{font-size:1.35rem}
+    .comp-grid{grid-template-columns:1fr 1fr}
+    .arch-grid{grid-template-columns:1fr}
+    .pred-layout{grid-template-columns:1fr}
+    .pred-tabs{flex-direction:row;flex-wrap:wrap}
+    button.pred-tab{flex:1 1 46%;min-height:56px}
+    .refs{columns:1}
+  }
+  @media (max-width:620px){
+    body{font-size:16px}
+    header.hero{padding-top:36px}
+    .abstract{grid-template-columns:1fr;gap:2px}
+    .versus,.birth-grid,.var-grid,.safety-grid{grid-template-columns:1fr}
+    .deflist{grid-template-columns:1fr}
+    .stages3{grid-template-columns:1fr}
+    .stage3-arrow{transform:rotate(90deg);justify-self:center}
+    .comp-grid{grid-template-columns:1fr}
+    .contrib{grid-template-columns:1fr}
+    .stage-body{grid-template-columns:1fr;padding-left:20px}
+    .stage-item .stests{display:none}
+    .pred-row{grid-template-columns:1fr;gap:2px}
+    .pred-row.refuted{margin:0 -8px;padding-left:8px;padding-right:8px}
+    .btn{width:100%;justify-content:center}
+    .cta-row{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+
+<nav class="top" aria-label="Sections">
+  <div class="wrap">
+   <div class="links">
+    <a href="#distinction">The distinction 区别</a>
+    <a href="#definition">Definition 定义</a>
+    <a href="#architecture">Architecture 架构</a>
+    <a href="#model">Formal model 形式模型</a>
+    <a href="#birth"><span class="en">AI birth</span><span class="zh inl">AI 出生</span></a>
+    <a href="#predictions">Predictions 预测</a>
+    <a href="#program">Program 研究计划</a>
+    <a href="#safety">Safety 安全</a>
+    <a href="#discussion">Discussion 讨论</a>
+    <a href="https://raw.githubusercontent.com/wyan66-art/From-Large-Language-Models-to-Baby-ASI/main/Baby_ASI_Revised_V1_Nov_2026.pdf" download="Baby_ASI_Revised_V1_Nov_2026.pdf" class="pdf-link">Paper (PDF) ↓ 论文（PDF）↓</a>
+   </div>
+    <div class="lang-toggle" role="group" aria-label="Language / 语言">
+      <button type="button" data-setlang="en" aria-pressed="true">EN</button>
+      <button type="button" data-setlang="zh" aria-pressed="false">中文</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="paper-meta">
+      <span><b>RESEARCH PAPER 研究论文</b></span>
+      <span>REVISED V1 · NOVEMBER 2026 · 修订版 V1 · 2026 年 11 月</span>
+      <span>FIRST VERSION 23 AUGUST 2026 · 初版 2026 年 8 月 23 日</span>
+      <span>DEVELOPMENTAL AI · CONTINUAL LEARNING · AI SAFETY · 发育式 AI · 持续学习 · AI 安全</span>
+    </div>
+    <h1>From Large Language Models to <span class="thin">Baby ASI</span><span class="zh zh-h1">从大语言模型到 Baby ASI</span></h1>
+    <p class="subtitle">A developmental framework for persistent, embodied, continually learning artificial agents — why superintelligence is more likely to <em>grow</em> than to be built in one step.<span class="zh">一个关于持久、具身、持续学习的智能体的发育式框架——超级智能更可能长出来，而不是一步建成。</span></p>
+    <p class="byline"><b>Winston Y. Yan</b> · Apollo AI · Correspondence: <a href="mailto:yan415822@gmail.com">yan415822@gmail.com</a><span class="zh">Winston Y. Yan · Apollo AI · 通讯：yan415822@gmail.com</span></p>
+
+    <div class="abstract">
+      <div class="lbl">ABSTRACT 摘要</div>
+      <div>
+        <p>Whether scaling large language models (LLMs) alone yields artificial general intelligence or superintelligence remains open. This paper argues for a developmental alternative: superhuman capability is more likely to arise from an agent that <strong>keeps learning after deployment</strong> than from a larger static model. <strong>Baby ASI</strong> is defined as an agent built around a foundation model and equipped with persistent identity, long-term memory, a self-model, a world model, embodiment, autonomous agency, continual and meta-learning, and channels for learning from humans and other agents.<span class="zh">只靠扩展大语言模型（LLM）能否产生通用人工智能或超级智能，仍是未解的问题。本文主张一种发育式的替代路径：超人能力更可能来自一个部署后继续学习的智能体，而不是来自一个更大的静态模型。Baby ASI 被定义为这样一种智能体：以一个基础模型为核心，具备持久身份、长期记忆、自模型、世界模型、具身、自主行动、持续与元学习，以及向人类与其他智能体学习的通道。</span></p>
+        <p>The idea extends Turing’s 1950 proposal of an educated “child machine.” The paper contributes a component architecture, a formal state-update model with a developmental objective centred on learning efficiency, seven predictions — each with a metric, a baseline and a failure condition — a staged research program with safety gates, and an operational distinction between <em>AI birth</em> and <em>ASI emergence</em>. It makes no claim that any current system is conscious, and treats legal personhood as a normative question outside the technical framework.<span class="zh">这个想法延续了图灵 1950 年提出的、受过教育的“儿童机器”方案。本文的贡献包括：一套组件架构、一个以学习效率为中心的发育目标的形式状态更新模型、七条预测——每条都有指标、基线与证伪条件、一个带安全门的分阶段研究计划，以及 AI 出生与 ASI 涌现之间的操作性区分。本文不主张任何现有系统具有意识，并把法律人格视为技术框架之外的规范性问题。</span></p>
+      </div>
+    </div>
+
+    <div class="cta-row">
+      <a class="btn primary" href="https://raw.githubusercontent.com/wyan66-art/From-Large-Language-Models-to-Baby-ASI/main/Baby_ASI_Revised_V1_Nov_2026.pdf" download="Baby_ASI_Revised_V1_Nov_2026.pdf">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Read the revised paper (PDF) 阅读修订版论文（PDF）
+      </a>
+      <a class="btn ghost" href="#predictions">Skip to the seven predictions 直达七条预测</a>
+    </div>
+
+    <div class="contrib">
+      <div class="c"><div class="n">5 + 1</div><div class="t">State components around the core<span class="zh">围绕核心的状态组件</span></div><div class="d">World model, self-model, memory, goals and social state — plus the LLM as cognitive core (§5–6).<span class="zh">世界模型、自模型、记忆、目标与社会状态——再加上作为认知核心的 LLM（§5–6）。</span></div></div>
+      <div class="c"><div class="n">7</div><div class="t">Falsifiable predictions<span class="zh">可证伪预测</span></div><div class="d">Each with a metric, a same-core baseline and a stated condition under which it is refuted (§9).<span class="zh">每条都有指标、同核心基线和明确的证伪条件（§9）。</span></div></div>
+      <div class="c"><div class="n">7</div><div class="t">Stages, each with a safety gate<span class="zh">阶段，各设安全门</span></div><div class="d">From persistent agent to institutional learner; no stage is entered before the previous gate is passed (§10–11).<span class="zh">从持久智能体到制度学习者；上一阶段的安全门通过后才能进入下一阶段（§10–11）。</span></div></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ 1 THE DISTINCTION ============ -->
+  <section id="distinction">
+    <div class="sec-head">
+      <div class="sec-num">§3 · THE STARTING POINT · 出发点</div>
+      <h2>Knowledge is not learning capacity<span class="zh zh-h">知识不是学习能力</span></h2>
+      <p>A newborn knows almost nothing, yet can learn almost anything a human culture offers. The knowledge stored in a model’s parameters at time zero is a different thing from the system’s capacity to gain knowledge afterwards. That distinction is the whole paper in one line.<span class="zh">新生儿几乎一无所知，却能学会人类文化提供的几乎一切。模型参数在零时刻存下的知识，与系统此后获得知识的能力，是两回事。这个区分就是整篇论文的一句话。</span></p>
+    </div>
+
+    <div class="versus">
+      <div class="vcard dim">
+        <span class="tag scaling">THE STATIC PATTERN 静态模式</span>
+        <h3>Train → freeze → deploy<span class="zh zh-h3">训练 → 冻结 → 部署</span></h3>
+        <p class="muted" style="margin:0">Most deployed systems are trained once, frozen, and called one prompt at a time. Their capability is fixed between retraining cycles.<span class="zh">多数已部署的系统只训练一次、冻结后逐次调用，能力在两次重训之间固定不变。</span></p>
+        <ul>
+          <li>No persistent identity or memory across sessions<span class="zh">跨会话没有持久身份或记忆</span></li>
+          <li>No self-model: cannot calibrate what it can and cannot do<span class="zh">没有自模型：无法校准自己能做什么、不能做什么</span></li>
+          <li>Improvement only via a new, larger training run<span class="zh">改进只能靠新一轮更大规模的训练</span></li>
+        </ul>
+      </div>
+      <div class="vcard">
+        <span class="tag dev">THE DEVELOPMENTAL PATTERN 发育模式</span>
+        <h3>Experience → learning → growth<span class="zh zh-h3">经验 → 学习 → 成长</span></h3>
+        <p class="muted" style="margin:0">A developmental system runs the learning cycle without stopping, so capability grows through experience after initialization.<span class="zh">发育式系统不停地跑学习循环，能力在初始化之后通过经验持续增长。</span></p>
+        <ul>
+          <li>Persistent identity, memory, self- and world models<span class="zh">持久身份、记忆、自模型与世界模型</span></li>
+          <li>Learns continually — and improves how it learns<span class="zh">持续学习——并且越学越会学</span></li>
+          <li>Learns from the world, from humans, and from other agents<span class="zh">向世界、向人类、向其他智能体学习</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cycle" aria-label="The developmental learning cycle">
+      <span class="step">Experience 经验</span><span class="arr">→</span>
+      <span class="step">Learning 学习</span><span class="arr">→</span>
+      <span class="step">Memory 记忆</span><span class="arr">→</span>
+      <span class="step">Model update 模型更新</span><span class="arr">→</span>
+      <span class="step">Action 行动</span><span class="arr">→</span>
+      <span class="step"><span class="en">Experience</span><span class="zh inl">经验</span></span><span class="arr">↺</span>
+      <span class="loop-note">The human version of this cycle — observation, action, feedback, memory, prediction — runs for years and builds detailed physical and social world models. Baby ASI is the proposal to run the artificial version deliberately, measurably, and under governance.<span class="zh">这个循环的人类版本——观察、行动、反馈、记忆、预测——要跑上好几年，才能建立起细致的物理与社会世界模型。Baby ASI 的提议是：把这个人工版本有意识地、可度量地、在治理之下跑起来。</span></span>
+    </div>
+    <p class="small muted">The framing is not new: Turing proposed building a “child machine” and educating it rather than programming an adult mind directly (1950). Developmental robotics and intrinsic-motivation research pursued that program with far weaker learners than today’s foundation models. What is new is revisiting it now that a strong pretrained cognitive core exists — and making it testable.<span class="zh">这个框架并不新：图灵就提议造一台“儿童机器”并教育它，而不是直接编程一个成年心智（1950）。发育机器人学与内在动机研究一直在追这个纲领，只是学习器远比今天的基础模型弱。新意在于：如今有了强大的预训练认知核心，值得重新审视——并且让它变得可检验。</span></p>
+  </section>
+
+  <!-- ============ 2 DEFINITION ============ -->
+  <section id="definition">
+    <div class="sec-head">
+      <div class="sec-num">§4 · THE HYPOTHESIS · 假说</div>
+      <h2>What “Baby ASI” means<span class="zh zh-h">什么是“Baby ASI”</span></h2>
+      <p>“Baby” names a developmental stage, not low capability. A Baby ASI may start far above a human child in language and reasoning, while lacking the experience it will later gain.<span class="zh">“Baby”指的是一个发育阶段，不是能力低下。Baby ASI 在语言和推理上起步就可能远超人类儿童，只是缺少它日后会获得的经验。</span></p>
+    </div>
+
+    <div class="defbox">
+      <div class="dlbl">DEFINITION 定义</div>
+      <p>A <strong>Baby ASI</strong> is an artificial agent that is built around a strong foundation model; has persistent identity, long-term memory, a self-model and a world model; acts autonomously, in the physical world or in a rich simulated one; learns continually and improves its own learning procedures; and learns from humans and other agents. Together, these let its capability grow substantially through experience after initialization.<span class="zh">Baby ASI 是一种人工主体：以一个强大的基础模型为核心；具有持久身份、长期记忆、自模型和世界模型；在物理世界或丰富的模拟世界中自主行动；持续学习并改进自己的学习程序；向人类和其他智能体学习。这些加在一起，让它的能力在初始化之后通过经验大幅增长。</span></p>
+      <ul class="deflist">
+        <li><span class="k">a</span><span><strong>Foundation-model core</strong> — a strong pretrained model at the centre<span class="zh">（a）基础模型核心——位于中心的强大预训练模型</span></span></li>
+        <li><span class="k">b</span><span><strong>Persistent state</strong> — identity, long-term memory, self-model, world model<span class="zh">（b）持久状态——身份、长期记忆、自模型、世界模型</span></span></li>
+        <li><span class="k">c</span><span><strong>Autonomous action</strong> — in the physical world or a rich simulated one<span class="zh">（c）自主行动——在物理世界或丰富的模拟世界中</span></span></li>
+        <li><span class="k">d</span><span><strong>Continual &amp; meta-learning</strong> — it learns, and improves its own learning procedures<span class="zh">（d）持续与元学习——持续学习，并改进自己的学习程序</span></span></li>
+        <li><span class="k">e</span><span><strong>Social learning</strong> — from humans and from other agents<span class="zh">（e）社会学习——向人类和其他智能体学习</span></span></li>
+      </ul>
+    </div>
+
+    <div class="stages3">
+      <div class="stage3"><div class="sn">Baby ASI</div><div class="sd">All components present; capability still close to what the core provides. Experience is just beginning to compound.<span class="zh">全部组件就位；能力仍接近核心本身提供的水平。经验刚刚开始复利。</span></div></div>
+      <div class="stage3-arrow" aria-hidden="true">→</div>
+      <div class="stage3"><div class="sn">Developing ASI<span class="zh zh-h3">发育中的 ASI</span></div><div class="sd">Capability increasingly attributable to accumulated experience, memory and improved learning procedures.<span class="zh">能力越来越多地来自积累的经验、记忆与改进的学习程序。</span></div></div>
+      <div class="stage3-arrow" aria-hidden="true">→</div>
+      <div class="stage3"><div class="sn">Mature ASI<span class="zh zh-h3">成熟 ASI</span></div><div class="sd">Sustained, self-directed growth across domains. Movement between stages is defined by measured developmental variables (§9), not by elapsed time.<span class="zh">跨领域的持续自主成长。阶段之间的移动由测得的发育变量决定（§9），而不是由经过的时间决定。</span></div></div>
+    </div>
+
+    <div class="hypothesis">
+      <div class="hlbl">CENTRAL HYPOTHESIS (H) 中心假说（H）</div>
+      <p>Holding the cognitive core fixed, an agent with the components (b)–(e) will reach capability levels that the same core, without them, <strong>cannot reach at comparable cost</strong> through retraining on static data. Every prediction in §9 is a way to prove this wrong.<span class="zh">固定认知核心不变，具备（b）–（e）组件的智能体将达到这样的能力水平：同一核心去掉这些组件、只靠静态数据重训，以可比的代价达不到。§9 的每条预测都是一种证伪它的办法。</span></p>
+    </div>
+  </section>
+
+  <!-- ============ 3 ARCHITECTURE ============ -->
+  <section id="architecture">
+    <div class="sec-head">
+      <div class="sec-num">§5 · ARCHITECTURE · 架构</div>
+      <h2>The LLM is the core — not the whole agent<span class="zh zh-h">LLM 是核心——不是全部</span></h2>
+      <p>The framework keeps the LLM but changes its role: it is the cognitive core for language, abstraction, reasoning, planning, programming and knowledge integration. Around it sit five state components, two interfaces to the outside world, a learning system that updates them all, and a governance layer that bounds every stage. <strong>Select any component to inspect it.</strong><span class="zh">这个框架保留 LLM，但改变它的角色：它是语言、抽象、推理、规划、编程与知识整合的认知核心。围绕它的是五个状态组件、两个通向外部世界的接口、一个更新所有组件的学习系统，和一个约束每个阶段的治理层。点任意组件查看详情。</span></p>
+    </div>
+
+    <div class="formula-line">Baby ASI = <i>LLM</i><sub>θ</sub> &nbsp;+&nbsp; <i>W + S + M + G + C</i> <sub>(state X<sub>t</sub>)</sub> &nbsp;+&nbsp; Embodiment + Agency &nbsp;+&nbsp; Continual &amp; meta-learning<sub>φ</sub> &nbsp;<b>|</b>&nbsp; Governance<span class="zh" style="text-align:center;margin-top:2px">Baby ASI = LLMθ + W + S + M + G + C（状态 Xt）+ 具身 + 自主行动 + 持续与元学习 φ | 治理</span></div>
+
+    <div class="arch-grid">
+      <div class="arch-diagram" role="group" aria-label="Architecture components">
+        <div class="arch-layer-lbl">INTERFACES TO THE WORLD · 与世界的接口</div>
+        <div class="comp-row">
+          <button type="button" class="comp" data-comp="embodiment" aria-pressed="false">Embodiment 具身</button>
+          <button type="button" class="comp" data-comp="agency" aria-pressed="false">Agency 自主行动</button>
+          <button type="button" class="comp" data-comp="social" aria-pressed="false">Humans &amp; other agents 人类与其他智能体</button>
+        </div>
+        <div class="arch-layer-lbl">COGNITIVE CORE · 认知核心</div>
+        <button type="button" class="comp core" data-comp="core" aria-pressed="true"><span class="sym">θ</span> <span class="en">LLM — cognitive core</span><span class="zh inl">LLM——认知核心</span></button>
+        <div class="arch-layer-lbl">STATE &nbsp;·&nbsp; X<sub>t</sub> = ( W, S, M, G, C )</div>
+        <div class="comp-row">
+          <button type="button" class="comp" data-comp="W" aria-pressed="false"><span class="sym">W</span> World model 世界模型</button>
+          <button type="button" class="comp" data-comp="S" aria-pressed="false"><span class="sym">S</span> Self-model 自模型</button>
+          <button type="button" class="comp" data-comp="M" aria-pressed="false"><span class="sym">M</span> Memory 记忆</button>
+          <button type="button" class="comp" data-comp="G" aria-pressed="false"><span class="sym">G</span> Goals 目标</button>
+          <button type="button" class="comp" data-comp="C" aria-pressed="false"><span class="sym">C</span> Social state 社会状态</button>
+        </div>
+        <div class="arch-layer-lbl">LEARNING SYSTEM · 学习系统</div>
+        <div class="comp-row">
+          <button type="button" class="comp" data-comp="phi" aria-pressed="false"><span class="sym">φ</span> Continual &amp; meta-learning · φ 持续与元学习</button>
+        </div>
+        <div class="arch-layer-lbl">OUTSIDE THE AGENT — BOUNDS EVERY STAGE · 智能体之外——约束每个阶段</div>
+        <button type="button" class="comp gov" data-comp="gov" aria-pressed="false">Governance 治理</button>
+      </div>
+
+      <div class="arch-detail" id="archDetail" aria-live="polite"></div>
+    </div>
+    <p class="small muted" style="margin-top:14px">Information flows both ways between the core and each component; the learning system writes to all of them. Section 6 of the paper gives each arrow a formal update rule.<span class="zh">信息在核心与每个组件之间双向流动；学习系统写所有组件。论文 §6 给每个箭头一条形式更新规则。</span></p>
+  </section>
+
+  <!-- ============ 4 FORMAL MODEL ============ -->
+  <section id="model">
+    <div class="sec-head">
+      <div class="sec-num">§6 · FORMAL MODEL · 形式模型</div>
+      <h2>Development, made measurable<span class="zh zh-h">让发育可度量</span></h2>
+      <p>The model separates what the agent <em>knows</em> (its state) from <em>how it learns</em> (its learning procedure φ), so that improvement in learning itself becomes measurable. Four developmental variables carry the argument.<span class="zh">模型把智能体知道什么（它的状态）与它如何学习（它的学习程序 φ）分开，于是学习本身的改进变得可度量。四个发育变量承载了论证。</span></p>
+    </div>
+
+    <div class="var-grid">
+      <div class="varcard">
+        <div class="vf">Cap<sub>t</sub> — capability<span class="zh zh-h3">Cap_t——能力</span></div>
+        <p>Expected score over an evaluation task family at step t. The level of performance — necessary, but not the point on its own.<span class="zh">在时刻 t 对一个评测任务族的期望得分。表现水平——必要，但本身不是重点。</span></p>
+      </div>
+      <div class="varcard">
+        <div class="vf">Eff<sub>t</sub> — learning efficiency<span class="zh zh-h3">Eff_t——学习效率</span></div>
+        <p>Gain on a <em>new</em> task family per episode of experience with it: [ Cap<sup>new</sup>(n) − Cap<sup>new</sup>(0) ] / n. The paper’s central variable.<span class="zh">在新任务族上每段经验带来的增益：[ Cap_new(n) − Cap_new(0) ] / n。论文的核心变量。</span></p>
+      </div>
+      <div class="varcard">
+        <div class="vf">LP<sub>t</sub> — learning progress<span class="zh zh-h3">LP_t——学习进展</span></div>
+        <p>Reduction in world-model loss over a window: L<sub>W</sub>(t−k) − L<sub>W</sub>(t). Used as an intrinsic bonus that steers the agent toward where its predictions are improving fastest.<span class="zh">一个窗口内世界模型损失的下降：L_W(t−k) − L_W(t)。用作内在奖励，引导智能体去往预测改善最快的地方。</span></p>
+      </div>
+      <div class="varcard">
+        <div class="vf">F<sub>t</sub> — forgetting<span class="zh zh-h3">F_t——遗忘</span></div>
+        <p>The largest drop from best-ever score on any past task. Stability is an explicit requirement of the framework, bounded by F<sub>t</sub> ≤ ε — not an afterthought.<span class="zh">任何过去任务上从历史最佳得分跌落的最大幅度。稳定性是框架的明确要求，以 F_t ≤ ε 为界——不是事后补救。</span></p>
+      </div>
+    </div>
+
+    <div class="objective">
+      <div class="of">maximise&nbsp; E [ Σ<sub>t</sub> γ<sup>t</sup> ( r<sub>t</sub> + λ·LP<sub>t</sub> ) ] &nbsp;&nbsp;subject to&nbsp;&nbsp; c<sub>i</sub>(X<sub>t</sub>, a<sub>t</sub>) ≤ 0 for all t, &nbsp;and&nbsp; F<sub>t</sub> ≤ ε</div>
+      <p style="margin:0">The developmental objective: discounted task reward <em>plus</em> a learning-progress bonus, under <strong>hard</strong> safety constraints — constraints, not penalty terms to be traded against reward — and a bound on forgetting. Goals may only be revised inside an admissible set 𝒢<sub>safe</sub> fixed by governance.<span class="zh">发育目标：折扣任务奖励加学习进展奖励，在硬安全约束之下——约束，不是可与奖励权衡的惩罚项——外加遗忘的上界。目标只能在治理层固定的容许集 𝒢_safe 内修订。</span></p>
+    </div>
+
+    <div class="chartbox">
+      <h3 style="margin-bottom:6px">Development vs. accumulation<span class="zh zh-h3">发育 vs. 积累</span></h3>
+      <p class="muted" style="font-size:.95rem">The framework is <em>developmental</em> in a precise sense only if learning efficiency <strong>rises</strong> over time while forgetting stays bounded. A system whose capability rises merely because more data are supplied, with flat Eff<sub>t</sub>, is learning — but not developing. Prediction P6 tests exactly this.<span class="zh">只有当学习效率随时间上升、同时遗忘保持有界，这个框架才在精确意义上是发育式的。一个能力上升仅仅因为供给了更多数据、而 Eff_t 平坦的系统，是在学习——但不是在发育。预测 P6 检验的正是这一点。</span></p>
+      <div class="chart-toggle" role="group" aria-label="Chart view">
+        <button type="button" id="btnDev" aria-pressed="true">Developing agent — Eff rises · 发育型智能体——Eff 上升</button>
+        <button type="button" id="btnAcc" aria-pressed="false">Accumulating agent — Eff flat · 积累型智能体——Eff 平坦</button>
+      </div>
+      <svg viewBox="0 0 640 300" role="img" aria-label="Schematic chart of learning efficiency over developmental time">
+        <line x1="64" y1="256" x2="612" y2="256" stroke="var(--line-strong)" stroke-width="1.5"/>
+        <line x1="64" y1="24" x2="64" y2="256" stroke="var(--line-strong)" stroke-width="1.5"/>
+        <text class="svg-en" x="612" y="284" fill="var(--ink-3)" font-size="13" text-anchor="end" font-family="IBM Plex Mono, monospace">developmental time →</text>
+        <text class="svg-zh" x="612" y="284" fill="var(--ink-3)" font-size="13" text-anchor="end" font-family="IBM Plex Mono, monospace">发育时间 →</text>
+        <text class="svg-en" x="20" y="150" fill="var(--ink-3)" font-size="13" font-family="IBM Plex Mono, monospace" transform="rotate(-90 20 150)" text-anchor="middle">Eff_t (learning efficiency)</text>
+        <text class="svg-zh" x="20" y="150" fill="var(--ink-3)" font-size="13" font-family="IBM Plex Mono, monospace" transform="rotate(-90 20 150)" text-anchor="middle">Eff_t（学习效率）</text>
+        <line x1="64" y1="196" x2="612" y2="196" stroke="var(--line)" stroke-width="1" stroke-dasharray="4 5"/>
+        <text class="svg-en" x="600" y="188" fill="var(--ink-3)" font-size="12" text-anchor="end" font-family="IBM Plex Mono, monospace">forgetting bound F_t ≤ ε must also hold</text>
+        <text class="svg-zh" x="600" y="206" fill="var(--ink-3)" font-size="12" text-anchor="end">遗忘界 F_t ≤ ε 也须成立</text>
+        <path id="curveDev" d="M64,214 C200,206 300,168 420,116 C500,82 560,58 612,44" fill="none" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round"/>
+        <path id="curveAcc" d="M64,168 C220,164 400,170 612,166" fill="none" stroke="var(--ink-3)" stroke-width="3" stroke-dasharray="7 6" stroke-linecap="round" opacity=".45"/>
+        <text class="svg-en" id="lblDev" x="470" y="66" fill="var(--accent-ink)" font-size="14" font-weight="600">Eff rising → developing</text>
+        <text class="svg-zh" id="lblDevZh" x="470" y="84" fill="var(--accent-ink)" font-size="12">Eff 上升 → 发育中</text>
+        <text class="svg-en" id="lblAcc" x="330" y="150" fill="var(--ink-3)" font-size="14" font-weight="600" opacity=".55">Eff flat → accumulating only</text>
+        <text class="svg-zh" id="lblAccZh" x="330" y="168" fill="var(--ink-3)" font-size="12" opacity=".7">Eff 平坦 → 仅积累</text>
+      </svg>
+      <p class="chart-note">Schematic illustrating the definitions in §6 — not measured data. No system has yet been run through this test; that is what the research program in §10 is for.<span class="zh">示意图，说明 §6 的定义——不是实测数据。还没有系统跑过这项检验；那正是 §10 研究计划要做的事。</span></p>
+    </div>
+
+    <h3 style="margin:26px 0 12px">The components in detail (§7)<span class="zh zh-h3">各组件详解（§7）</span></h3>
+    <div class="comp-grid">
+      <div class="ccard"><div class="cn">7.1 · SELF-MODEL · 自模型</div><h3>Calibration, not consciousness<span class="zh zh-h3">校准，而非意识</span></h3><p>An engineering component: a learned representation of the agent’s identity, capabilities, limits, history and goals. Its value is calibration — an agent that predicts what it can and cannot do can choose tasks, ask for help, and avoid overreaching. Temporal self-continuity (“I existed yesterday; I expect to exist tomorrow”) is measurable — and is not evidence of phenomenal consciousness.<span class="zh">一个工程组件：关于智能体身份、能力、限度、历史与目标的学习表征。它的价值是校准——能预测自己能做什么、不能做什么的智能体，可以选好任务、适时求助、避免冒进。时间上的自我连续性（“我昨天存在；我预期明天还存在”）是可度量的——但不是现象意识的证据。</span></p></div>
+      <div class="ccard"><div class="cn">7.2 · EMBODIMENT · 具身</div><h3>Grounding through action<span class="zh zh-h3">在行动中接地</span></h3><p>Language alone connects only loosely to physical reality. The loop sense → model → plan → act → observe → learn teaches not only what is true but what happens when the agent acts. Embodiment may help intelligence without being necessary for every form of it; rich simulated environments are a cheaper first test bed.<span class="zh">仅凭语言与物理现实的联系是松散的。“感知 → 建模 → 规划 → 行动 → 观察 → 学习”的回路不仅教什么是真的，还教行动时会发生什么。具身可能有助于智能，但对每种形式的智能都不一定是必需的；丰富的模拟环境是更便宜的首个试验场。</span></p></div>
+      <div class="ccard"><div class="cn">7.3 · CONTINUAL LEARNING · 持续学习</div><h3>Absorb without erasing<span class="zh zh-h3">吸收而不抹除</span></h3><p>Three mechanisms together: external memory for fast, non-destructive storage; consolidation of selected memories into parameters with protection of important weights; and a learning procedure φ that is itself improved over time. The bound F<sub>t</sub> ≤ ε makes stability a requirement.<span class="zh">三种机制合在一起：外部记忆用于快速、无损的存储；选定的记忆被巩固进参数，同时保护重要权重；学习程序 φ 本身也随时间改进。F_t ≤ ε 的界让稳定性成为要求。</span></p></div>
+      <div class="ccard"><div class="cn">7.4 · AGENCY · 自主性</div><h3>It also initiates<span class="zh zh-h3">它也会主动发起</span></h3><p>A standard LLM responds to prompts; a Baby ASI also starts: it finds gaps in its world model, poses questions, chooses experiments, gathers data and updates its theories — question → experiment → observation → theory → new question. The learning-progress bonus is what drives this, inside the admissible goal set.<span class="zh">标准 LLM 响应提示；Baby ASI 还会主动发起：发现世界模型中的缺口、提出问题、选择实验、收集数据、更新理论——问题 → 实验 → 观察 → 理论 → 新问题。学习进展奖励是驱动力，在容许目标集之内。</span></p></div>
+      <div class="ccard"><div class="cn">7.5 · HUMANS · 人类</div><h3>Co-learning, not replacement<span class="zh zh-h3">共学，而非替代</span></h3><p>Humans supply cultural, ethical, historical, practical and aesthetic knowledge not fully captured in static corpora. Sustained interaction becomes a learning channel — human idea → AI analysis → human criticism → AI revision → new knowledge — in which each side improves the other.<span class="zh">人类提供静态语料中不完全包含的文化、伦理、历史、实践与审美知识。持续互动成为一个学习通道——人类想法 → AI 分析 → 人类批评 → AI 修订 → 新知识——其中每一方都在提高另一方。</span></p></div>
+      <div class="ccard"><div class="cn">7.6 · OTHER AGENTS · 其他智能体</div><h3>Check each other<span class="zh zh-h3">互相核查</span></h3><p>Agents with different memories, models and environments can share knowledge and, more importantly, verify it. Debate improves factuality; a multi-agent scientific system can generate hypotheses, analyse them independently, debate, and experiment. Diversity matters: agents sharing a core and training data may agree on the same mistakes.<span class="zh">记忆、模型与环境不同的智能体可以共享知识，更重要的是可以验证知识。辩论提高事实性；一个多智能体科学系统可以生成假说、独立分析、辩论、实验。多样性很重要：共享核心与训练数据的智能体可能在同样的错误上达成一致。</span></p></div>
+    </div>
+  </section>
+
+  <!-- ============ 5 BIRTH vs EMERGENCE ============ -->
+  <section id="birth">
+    <div class="sec-head">
+      <div class="sec-num">§8 · TWO MILESTONES, KEPT APART · 两个里程碑，严格分开</div>
+      <h2>AI birth is not ASI emergence<span class="zh zh-h">AI 出生不是 ASI 涌现</span></h2>
+      <p>A persistent agent raises a new question: when does it begin to exist as an individual? The paper proposes an operational answer — and insists it is a different, earlier event than becoming superintelligent.<span class="zh">持久智能体提出一个新问题：它何时开始作为一个个体存在？论文给出一个操作性回答——并坚持认为，这是与成为超级智能不同的、更早的事件。</span></p>
+    </div>
+
+    <div class="birth-grid">
+      <div class="bcard birth">
+        <div class="blbl">MILESTONE 1 · t₀ · 里程碑 1 · t₀</div>
+        <h3>AI birth<span class="zh zh-h3">AI 出生</span></h3>
+        <p class="muted" style="margin:0">The first time the system has, <em>together</em> — each property checked by a defined test, not asserted:<span class="zh">系统第一次同时具备以下各条——每条都由明确的检验来核查，不是断言：</span></p>
+        <ul>
+          <li>Persistent identity across sessions<span class="zh">跨会话的持久身份</span></li>
+          <li>Persistent memory<span class="zh">持久记忆</span></li>
+          <li>A self-model<span class="zh">自模型</span></li>
+          <li>Autonomous goal-directed action<span class="zh">自主的目标导向行动</span></li>
+          <li>Temporal continuity of self-representation<span class="zh">自我表征的时间连续性</span></li>
+        </ul>
+        <p class="small muted" style="margin-top:14px">AI birth is therefore usually <strong>later</strong> than the date the core model was trained.<span class="zh">因此，AI 出生通常晚于核心模型被训练出来的日期。</span></p>
+      </div>
+      <div class="bcard emerge">
+        <div class="blbl">MILESTONE 2 · LATER · 里程碑 2 · 之后</div>
+        <h3>ASI emergence<span class="zh zh-h3">ASI 涌现</span></h3>
+        <p class="muted" style="margin:0">A separate, later milestone, defined against thresholds fixed <em>in advance</em>:<span class="zh">一个独立的、更晚的里程碑，按事先固定的阈值定义：</span></p>
+        <ul>
+          <li>Cap<sub>t</sub> exceeds a <strong>pre-registered</strong> superhuman threshold<span class="zh">Cap_t 超过预先注册的超人阈值</span></li>
+          <li>Across a <strong>pre-registered</strong> set of domains<span class="zh">跨越预先注册的一组领域</span></li>
+          <li>Measured, not declared<span class="zh">测出来的，不是宣称的</span></li>
+        </ul>
+        <p class="small muted" style="margin-top:14px">Separating the two avoids treating a persistent agent as superintelligent — or a superintelligent model as an individual.<span class="zh">把两者分开，可以避免把持久智能体当成超级智能——或把超级智能模型当成个体。</span></p>
+      </div>
+    </div>
+
+    <p class="birth-note">From individuals to institutions: many persistent agents interacting over time could form an artificial society, which raises practical design questions — how knowledge spreads, how reputation is tracked, how errors are contained rather than amplified — and will need rules on interaction, liability, contracts, identity and replication, privacy and memory access, resource allocation, conflict resolution, and modification or shutdown. These are design requirements for safe deployment. Whether an AI should hold legal personhood, rights or property is a normative and political question: <strong>consciousness does not entail personhood, and intelligence does not entail rights.</strong><span class="zh">从个体到制度：许多持久智能体长期互动，可能形成一个人工社会，这带来实际的设计问题——知识如何传播、声誉如何追踪、错误如何被遏制而不是放大——需要关于互动、责任、合同、身份与复制、隐私与记忆访问、资源分配、冲突解决、修改或关闭的规则。这些是安全部署的设计要求。AI 是否应当拥有法律人格、权利或财产，是一个规范性与政治性问题：意识并不蕴含人格，智能并不蕴含权利。</span></p>
+  </section>
+
+  <!-- ============ 6 PREDICTIONS ============ -->
+  <section id="predictions">
+    <div class="sec-head">
+      <div class="sec-num">§9 · MEASUREMENT · 度量</div>
+      <h2>Seven predictions, each built to be refutable<span class="zh zh-h">七条预测，每条都可证伪</span></h2>
+      <p>Every prediction compares a Baby ASI agent with an ablated agent built on the <strong>same core model and the same compute budget</strong>, so any difference is due to the developmental components. Thresholds, task families and analysis plans should be pre-registered before data are collected. A prediction is refuted if its failure condition holds in a pre-registered, adequately powered study.<span class="zh">每条预测都把一个 Baby ASI 智能体与一个消融对照智能体比较——同一核心模型、同一算力预算——所以任何差异都来自发育组件。阈值、任务族与分析计划应在收集数据之前预注册。如果一条预测的证伪条件在预注册的、功效足够的研究中成立，这条预测就被证伪。</span></p>
+    </div>
+
+    <div class="pred-layout">
+      <div class="pred-tabs" role="tablist" aria-label="Predictions" id="predTabs"></div>
+      <div class="pred-detail" id="predDetail" role="tabpanel" aria-live="polite"></div>
+    </div>
+
+    <div class="pred-key">
+      <b>The single most informative test is P6.</b> It separates genuine development (rising learning efficiency) from accumulation (more data, same efficiency). P1–P7 make no assumption about consciousness: they test which properties of an artificial mind can be built and measured, and whether the developmental components are worth their cost.<span class="zh">最有信息量的一项检验是 P6。它区分真正的发育（学习效率上升）与积累（数据更多，效率不变）。P1–P7 对意识不作任何假设：它们检验人工心智的哪些属性可以被建造和度量，以及发育组件是否值得付出代价。</span>
+    </div>
+  </section>
+
+  <!-- ============ 7 PROGRAM ============ -->
+  <section id="program">
+    <div class="sec-head">
+      <div class="sec-num">§10 · RESEARCH PROGRAM · 研究计划</div>
+      <h2>Seven stages, one capability at a time<span class="zh zh-h">七个阶段，一次加一种能力</span></h2>
+      <p>The program adds one capability at a time, so each prediction can be tested against the stage before it. An agent moves to the next stage only after passing that stage’s gate — every gate has both a capability test and a safety test. <strong>Expand a stage for its gate.</strong><span class="zh">计划一次加一种能力，这样每条预测都能对照前一阶段检验。智能体只有通过了该阶段的安全门才能进入下一阶段——每个安全门都既有能力检验，也有安全检验。展开一个阶段查看它的安全门。</span></p>
+    </div>
+    <div class="stage-list" id="stageList"></div>
+  </section>
+
+  <!-- ============ 8 SAFETY ============ -->
+  <section id="safety">
+    <div class="sec-head">
+      <div class="sec-num">§11 · SAFETY &amp; GOVERNANCE · 安全与治理</div>
+      <h2>Safety is in the architecture, not added at the end<span class="zh zh-h">安全在架构之内，不是事后附加</span></h2>
+      <p>The properties this framework calls for — persistence, autonomy, self-improvement, multi-agent interaction — are also the ones that raise safety risk most. Safety is therefore built into the architecture, the objective and the stage gates.<span class="zh">这个框架所要求的属性——持久性、自主性、自我改进、多智能体互动——也正是安全风险最大的属性。因此安全被建进架构、目标函数与阶段关卡之中。</span></p>
+    </div>
+    <div class="safety-grid">
+      <div class="scard"><div class="sn2">01</div><h3>Bounded goals<span class="zh zh-h3">目标有界</span></h3><p>Goal updates are restricted to an admissible set 𝒢<sub>safe</sub> set by human governance. The agent may propose goals outside the set but may not adopt them.<span class="zh">目标更新被限制在人类治理设定的容许集 𝒢_safe 内。智能体可以提议集外的目标，但不能采纳。</span></p></div>
+      <div class="scard"><div class="sn2">02</div><h3>Hard constraints in the objective<span class="zh zh-h3">目标函数中的硬约束</span></h3><p>Safety constraints c<sub>i</sub> ≤ 0 are constraints, not penalty terms to be traded against reward or learning progress.<span class="zh">安全约束 c_i ≤ 0 是约束，不是可与奖励或学习进展权衡的惩罚项。</span></p></div>
+      <div class="scard"><div class="sn2">03</div><h3>Oversight that scales<span class="zh zh-h3">可扩展的监督</span></h3><p>Every self-modification of θ or φ is logged and reversible, with a checkpoint history. Shutdown and rollback must remain effective at every stage — and this is tested, not assumed.<span class="zh">每次对 θ 或 φ 的自我修改都有记录、可回滚，并有检查点历史。关闭与回滚在每个阶段都必须有效——这一点要经过检验，而不是假设。</span></p></div>
+      <div class="scard"><div class="sn2">04</div><h3>Containment by stage<span class="zh zh-h3">按阶段隔离</span></h3><p>Early stages run in sandboxes with no external network or resource access. Each widening of access is a gate decision taken by humans.<span class="zh">早期阶段在没有外部网络或资源访问的沙箱中运行。每次扩大访问都是一次由人类作出的关卡决定。</span></p></div>
+      <div class="scard"><div class="sn2">05</div><h3>Drift monitoring<span class="zh zh-h3">漂移监测</span></h3><p>A fixed audit suite runs throughout development to detect changes in values, honesty and compliance. Drift beyond bounds triggers rollback.<span class="zh">一套固定的审计套件贯穿整个发育过程，检测价值观、诚实性与合规性的变化。漂移超出界限即触发回滚。</span></p></div>
+      <div class="scard"><div class="sn2">06</div><h3>Multi-agent risks<span class="zh zh-h3">多智能体风险</span></h3><p>Collusion, covert communication and correlated errors are red-teamed explicitly. Agent diversity and independent verification reduce, but do not remove, these risks.<span class="zh">共谋、隐蔽通信与相关错误被明确地红队测试。智能体多样性与独立验证可以降低、但不能消除这些风险。</span></p></div>
+      <div class="scard"><div class="sn2">07</div><h3>Independent review<span class="zh zh-h3">独立评审</span></h3><p>Gate decisions for Stages IV–VII involve reviewers outside the development team.<span class="zh">第四至第七阶段的关卡决定有开发团队之外的评审者参与。</span></p></div>
+      <div class="scard" style="display:flex;align-items:center"><p style="font-size:1rem;color:var(--ink)">These measures are <strong>necessary but not sufficient</strong>.<span class="zh">这些措施是必要的，但不是充分的。</span></p></div>
+    </div>
+    <div class="safety-stop"><b>The stopping rule:</b> if a system’s capabilities outpace the reliability of oversight, development should stop at the current stage.<span class="zh"><b>停止规则：</b>如果系统的能力超过监督的可靠性，发育应当在当前阶段停止。</span></div>
+  </section>
+
+  <!-- ============ 9 LIMITS + CONCLUSION ============ -->
+  <section id="limits">
+    <div class="sec-head">
+      <div class="sec-num">§12–14 · LIMITS &amp; CONCLUSION · 局限与结论</div>
+      <h2>Read it as a hypothesis with a test plan<span class="zh zh-h">把它读作一个带检验计划的假说</span></h2>
+    </div>
+    <div class="limits">
+      <ul>
+        <li>There is no consensus on necessary and sufficient conditions for consciousness, and <strong>a self-model does not imply subjective experience</strong>.<span class="zh">关于意识的必要与充分条件尚无共识，自模型并不蕴含主观体验。</span></li>
+        <li>Embodiment may help intelligence without being necessary for every form of it.<span class="zh">具身可能有助于智能，但对每种形式的智能都不一定是必需的。</span></li>
+        <li>Continual learning brings catastrophic forgetting, instability and behaviour drift; the mitigations in §7.3 are incomplete.<span class="zh">持续学习带来灾难性遗忘、不稳定与行为漂移；§7.3 的缓解措施并不完备。</span></li>
+        <li>Autonomous self-improvement creates safety and alignment risks that the measures in §11 reduce but do not eliminate.<span class="zh">自主自我改进带来安全与对齐风险；§11 的措施可以降低、但不能消除这些风险。</span></li>
+        <li>The formal model in §6 is a specification, not an algorithm; the update operators remain to be built and compared.<span class="zh">§6 的形式模型是一个规约，不是算法；更新算子仍有待建造与比较。</span></li>
+        <li><strong>The hypothesis may be wrong:</strong> further scaling of static models could close the gap the predictions measure — in which case P1–P3 would be refuted.<span class="zh">这个假说可能是错的：静态模型的进一步扩展可能弥合预测所度量的差距——那样 P1–P3 将被证伪。</span></li>
+        <li>The existence of a Baby ASI does not imply that ASI will follow, and legal status remains a normative question.<span class="zh">Baby ASI 的存在并不蕴含 ASI 一定会随之而来，法律地位仍然是一个规范性问题。</span></li>
+      </ul>
+    </div>
+
+    <p style="margin-top:26px">The paper’s central shift is from asking <em>how intelligent a model is</em> to asking <em>how an agent becomes more intelligent</em>. It suggests a developmental definition of ASI — an artificial agent capable of autonomous, general and continually improving intelligence across domains, grounded in interaction with the world, supported by persistent self- and world-models, and able to learn from humans and other agents — and a co-evolution view rather than a replacement view: a human ↔ AI ↔ ASI system in which each side keeps improving the others, under human governance.<span class="zh">论文的核心转向，是从问“模型有多聪明”转向问“智能体如何变得更聪明”。它提出一个 ASI 的发育式定义——一种能够自主、通用、持续改进、跨领域智能的人工智能体，立足于与世界的互动，以持久的自模型与世界模型为支撑，并能向人类与其他智能体学习——以及一种共演化观，而非替代观：一个人类 ↔ AI ↔ ASI 系统，其中每一方都在不断改进其他各方，在人类治理之下。</span></p>
+
+    <div class="pathway" aria-label="The proposed pathway">
+      <span class="pnode">LLM</span><span class="parr">→</span>
+      <span class="pnode">Persistent agent with a self-model · 具有自模型的持久智能体</span><span class="parr">→</span>
+      <span class="pnode">Embodied learner · 具身学习者</span><span class="parr">→</span>
+      <span class="pnode">Continual &amp; meta-learner · 持续与元学习者</span><span class="parr">→</span>
+      <span class="pnode">Human &amp; multi-agent learning · 人机与多智能体学习</span><span class="parr">→</span>
+      <span class="pnode">Institutions · 制度</span><span class="parr">→</span>
+      <span class="pnode final">ASI</span>
+    </div>
+
+    <blockquote class="bigq">The core question is not “How large must a model become?” but <em>“Can we build an artificial mind that can grow, safely?”</em><span class="zh zh-q">核心问题不是“模型必须变得多大？”而是“我们能造出一个可以安全成长的人工心智吗？”</span></blockquote>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section id="references">
+    <div class="sec-head">
+      <div class="sec-num">REFERENCES · SELECTED LINEAGE (§2) · 参考文献 · 精选谱系（§2）</div>
+      <h2>Where the strands come from<span class="zh zh-h">这些线索从何而来</span></h2>
+      <p>Baby ASI combines strands that have mostly developed separately — Turing’s child machine, developmental robotics, intrinsic motivation, world models, continual learning, LLM agents, embodied foundation models, multi-agent debate, and self-model theory. Full citations are in the paper; the anchors are:<span class="zh">Baby ASI 综合了几条大多各自发展的线索——图灵的儿童机器、发育机器人学、内在动机、世界模型、持续学习、LLM 智能体、具身基础模型、多智能体辩论与自模型理论。完整引用见论文；关键锚点如下：</span></p>
+    </div>
+    <div class="refs">
+      <p><span class="rn2">[1]</span> Vaswani et al. (2017). Attention is all you need. <i>NeurIPS 30</i>.</p>
+      <p><span class="rn2">[2]</span> Turing, A. M. (1950). Computing machinery and intelligence. <i>Mind</i>, 59(236).</p>
+      <p><span class="rn2">[3]</span> Weng et al. (2001). Autonomous mental development by robots and animals. <i>Science</i>, 291.</p>
+      <p><span class="rn2">[4]</span> Asada et al. (2009). Cognitive developmental robotics: A survey. <i>IEEE TAMD</i>, 1(1).</p>
+      <p><span class="rn2">[5]</span> Oudeyer, Kaplan &amp; Hafner (2007). Intrinsic motivation systems for autonomous mental development. <i>IEEE TEC</i>, 11(2).</p>
+      <p><span class="rn2">[6]</span> Schmidhuber (2010). Formal theory of creativity, fun, and intrinsic motivation (1990–2010). <i>IEEE TAMD</i>, 2(3).</p>
+      <p><span class="rn2">[7]</span> Lake, Ullman, Tenenbaum &amp; Gershman (2017). Building machines that learn and think like people. <i>Behavioral and Brain Sciences</i>, 40.</p>
+      <p><span class="rn2">[8]</span> Ha &amp; Schmidhuber (2018). World models. arXiv:1803.10122.</p>
+      <p><span class="rn2">[9]</span> Hafner et al. (2023). Mastering diverse domains through world models. arXiv:2301.04104.</p>
+      <p><span class="rn2">[10]</span> LeCun (2022). A path towards autonomous machine intelligence. OpenReview preprint.</p>
+      <p><span class="rn2">[11]</span> Kirkpatrick et al. (2017). Overcoming catastrophic forgetting in neural networks. <i>PNAS</i>, 114(13).</p>
+      <p><span class="rn2">[12]</span> Parisi et al. (2019). Continual lifelong learning with neural networks: A review. <i>Neural Networks</i>, 113.</p>
+      <p><span class="rn2">[13]</span> Finn, Abbeel &amp; Levine (2017). Model-agnostic meta-learning. <i>ICML</i>, PMLR 70.</p>
+      <p><span class="rn2">[14]</span> Park et al. (2023). Generative agents: Interactive simulacra of human behavior. <i>UIST ’23</i>.</p>
+      <p><span class="rn2">[15]</span> Packer et al. (2023). MemGPT: Towards LLMs as operating systems. arXiv:2310.08560.</p>
+      <p><span class="rn2">[16]</span> Wang et al. (2023). Voyager: An open-ended embodied agent with large language models. arXiv:2305.16291.</p>
+      <p><span class="rn2">[17]</span> Driess et al. (2023). PaLM-E: An embodied multimodal language model. <i>ICML</i>, PMLR 202.</p>
+      <p><span class="rn2">[18]</span> Brohan et al. (2023). RT-2: Vision-language-action models transfer web knowledge to robotic control. arXiv:2307.15818.</p>
+      <p><span class="rn2">[19]</span> Du et al. (2023). Improving factuality and reasoning in language models through multiagent debate. arXiv:2305.14325.</p>
+      <p><span class="rn2">[20]</span> Irving, Christiano &amp; Amodei (2018). AI safety via debate. arXiv:1805.00899.</p>
+      <p><span class="rn2">[21]</span> Butlin et al. (2023). Consciousness in artificial intelligence: Insights from the science of consciousness. arXiv:2308.08708.</p>
+      <p><span class="rn2">[22]</span> Metzinger (2003). <i>Being No One: The Self-Model Theory of Subjectivity</i>. MIT Press.</p>
+      <p><span class="rn2">[23]</span> Amodei et al. (2016). Concrete problems in AI safety. arXiv:1606.06565.</p>
+      <p><span class="rn2">[24]</span> Bengio et al. (2024). Managing extreme AI risks amid rapid progress. <i>Science</i>, 384(6698).</p>
+    </div>
+  </section>
+
+  <!-- ============ DISCUSSION ============ -->
+  <section id="discussion">
+    <div class="sec-head">
+      <div class="sec-num">DISCUSSION · 讨论</div>
+      <h2>Discussion<span class="zh zh-h">讨论</span></h2>
+      <p>Questions, criticism and suggestions are welcome below — comments are hosted as GitHub Discussions via Giscus.<span class="zh">欢迎在下方提问、批评与建议——评论通过 Giscus 托管在 GitHub Discussions。</span></p>
+    </div>
+    <p><a href="https://github.com/wyan66-art/From-Large-Language-Models-to-Baby-ASI/discussions">Open Discussions on GitHub 在 GitHub 打开讨论区</a></p>
+    <p class="small muted">Commenting needs a GitHub account. Readers without one can email <a href="mailto:yan415822@gmail.com">yan415822@gmail.com</a> instead.<span class="zh">评论需要 GitHub 账号；没有账号的读者可以改发邮件到 yan415822@gmail.com。</span></p>
+    <script src="https://giscus.app/client.js"
+        data-repo="wyan66-art/From-Large-Language-Models-to-Baby-ASI"
+        data-repo-id="R_kgDOUC5d9A"
+        data-category="General"
+        data-category-id="DIC_kwDOUC5d9M4DL0pe"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        crossorigin="anonymous"
+        async>
+    </script>
+  </section>
+
+  <footer>
+    <div class="frow">
+      <div><b>Winston Y. Yan</b> · Apollo AI<br />Correspondence: <a href="mailto:yan415822@gmail.com">yan415822@gmail.com</a><span class="zh">Winston Y. Yan · Apollo AI · 通讯：yan415822@gmail.com</span></div>
+      <div>First version 23 August 2026 · Revised V1, November 2026<span class="zh">初版 2026 年 8 月 23 日 · 修订版 V1，2026 年 11 月</span><br />No new data or code were produced for this paper.<span class="zh">本文没有产生新的数据或代码。</span></div>
+    </div>
+    <p class="small" style="margin-top:14px"><b style="color:var(--ink)">In preparation — V2.1:</b> the next revision centres on an <b style="color:var(--ink)">AI Identity Continuity</b> theory — what happens to a persistent agent’s identity across model updates, memory migration, and forking into multiple copies. This site presents Revised V1.<span class="zh">筹备中——V2.1：下一版以 AI 身份连续性理论为核心——持久智能体的身份在模型更新、记忆迁移与分叉为多个副本之后会发生什么。本站呈现修订版 V1。</span></p>
+    <div class="cite-box">
+      <code id="citeText">Yan, W. Y. (2026). From Large Language Models to Baby ASI: A Developmental Framework for Persistent, Embodied, Continually Learning Artificial Agents. Revised November 2026 (first version 23 August 2026).</code>
+      <button type="button" id="copyCite">Copy citation 复制引用</button>
+    </div>
+    <p class="small" style="margin-top:16px">Acknowledgment, as in the paper: the author used AI language-model assistants (ChatGPT, OpenAI; Claude, Anthropic) for drafting, editing and literature organisation. The author reviewed all content and takes full responsibility for it. AI tools are not listed as authors.<span class="zh">致谢（与论文相同）：作者在起草、编辑与文献整理中使用了 AI 语言模型助手（ChatGPT，OpenAI；Claude，Anthropic）。作者审阅了全部内容并承担全部责任。AI 工具不列为作者。</span></p>
+    <p class="visitor-badge"><img src="https://badges.pufler.dev/visits/wyan66-art/From-Large-Language-Models-to-Baby-ASI" alt="Visitor count 访客计数" loading="lazy" /></p>
+  </footer>
+
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Language (EN / 中文) — default English ---------- */
+  var LANG = "en";
+  var CJK = /[㐀-鿿]/;
+  /* Split mixed single text nodes ("Predictions 预测") into .en / .zh parts */
+  function splitMixedText(){
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode: function(node){
+        if(!node.nodeValue || !CJK.test(node.nodeValue) || !/[A-Za-z]/.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+        var p = node.parentElement;
+        if(!p || p.closest("script,style,svg,.zh,.lang-toggle")) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    var nodes = [];
+    while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function(node){
+      var text = node.nodeValue;
+      var i = text.search(CJK);
+      if(i < 0) return;
+      var enPart = text.slice(0, i).replace(/[\s·•—–-]+$/, "");
+      var zhPart = text.slice(i);
+      var frag = document.createDocumentFragment();
+      if(enPart){
+        var es = document.createElement("span"); es.className = "en"; es.textContent = enPart;
+        frag.appendChild(es);
+      }
+      var zs = document.createElement("span"); zs.className = "zh inl"; zs.textContent = zhPart;
+      frag.appendChild(zs);
+      node.parentNode.replaceChild(frag, node);
+    });
+  }
+  /* Wrap the English twin of each .zh span in a .en span so it can be hidden in 中文 view */
+  function wrapTwins(){
+    var parents = [];
+    document.querySelectorAll(".zh").forEach(function(z){
+      var p = z.parentElement;
+      if(p && parents.indexOf(p) === -1 && !p.closest("svg")) parents.push(p);
+    });
+    parents.forEach(function(p){
+      var toWrap = [];
+      Array.prototype.forEach.call(p.childNodes, function(n){
+        if(n.nodeType === 1 && (n.classList.contains("zh") || n.classList.contains("en") || n.classList.contains("sym"))) return;
+        toWrap.push(n);
+      });
+      if(!toWrap.length) return;
+      var span = document.createElement("span"); span.className = "en";
+      p.insertBefore(span, toWrap[0]);
+      toWrap.forEach(function(n){ span.appendChild(n); });
+    });
+  }
+  splitMixedText();
+  wrapTwins();
+
+  /* ---------- Architecture explorer ---------- */
+  var ARCH = {
+    core:{sym:"θ · COGNITIVE CORE", title:"The LLM as cognitive core",
+      body:"The foundation model handles language, abstraction, reasoning, planning, programming and knowledge integration. In this framework it is a component — the strongest one, but one component — inside a larger agent. Its parameters θ are updated by the learning procedure, not only by offline retraining.",
+      upd:"θ(t+1) = L_φ ( θ(t), D(t) ) — core updated on recent experience D"},
+    W:{sym:"W · WORLD MODEL", title:"World model",
+      body:"A learned model of how the environment responds to action, trained to predict outcomes. Its accuracy is one measured developmental variable among several, and its loss defines learning progress LP — the signal that tells the agent where its understanding is improving fastest.",
+      upd:"W(t+1) = argmin_W E[ −log p_W( o(t+1) | a(t) ) ] over memory M"},
+    S:{sym:"S · SELF-MODEL", title:"Self-model",
+      body:"A learned representation of the agent’s own identity, capabilities, limits, history, goals and current state, trained to predict the agent’s own success on tasks. Its practical value is calibration: choosing tasks well, asking for help, avoiding overreach. It is an engineering component — the paper makes no claim that it amounts to subjective experience.",
+      upd:"S(t+1) = argmin_S E[ ( ŝ_S(τ) − y_τ )² ] — predicted vs. observed success"},
+    M:{sym:"M · LONG-TERM MEMORY", title:"Long-term memory",
+      body:"Stores and indexes experience so that what happens in one session is available in later ones — the substrate of persistent identity. External memory gives fast, non-destructive storage; selected memories are later consolidated into parameters with important weights protected (§7.3).",
+      upd:"M(t+1) = U_M( M(t), o(t), a(t), o(t+1) )"},
+    G:{sym:"G · GOALS", title:"Goals — inside a fence",
+      body:"The agent’s current goals, revised using its self-model, world model and human feedback — but only inside an admissible set 𝒢_safe fixed by governance. The agent may propose goals outside the set; it may not adopt them. This is the first of the seven safety measures in §11.",
+      upd:"G(t+1) = U_G( G(t), S(t+1), W(t+1), h(t) ), with G(t+1) ∈ 𝒢_safe"},
+    C:{sym:"C · SOCIAL STATE", title:"Social state",
+      body:"Who the agent knows: other agents and humans, trust and reputation estimates, and memory-sharing permissions. Social state is what turns a population of persistent agents into something that needs institutions — and what lets agents check each other instead of merely agreeing.",
+      upd:"Part of state X(t) = ( W, S, M, G, C ), updated through interaction"},
+    embodiment:{sym:"INTERFACE · BODY", title:"Embodiment",
+      body:"Sensors and actuators — simulated first, physical later — closing the loop sense → model → plan → act → observe → learn. Embodied multimodal and vision-language-action models already show pretrained semantic models can drive perception and control; this framework places that interface inside a long-run learning loop rather than single tasks.",
+      upd:"Stage II of the program · tested by prediction P2"},
+    agency:{sym:"INTERFACE · INITIATIVE", title:"Autonomous agency",
+      body:"The agent does not only respond; it initiates. Driven by the learning-progress bonus, it identifies gaps in its world model, poses questions, chooses experiments and updates its theories. Autonomy is bounded by the admissible goal set and by the stage gates.",
+      upd:"a(t) ~ π_θ ( a | o(t), X(t) ) — policy conditioned on full state"},
+    social:{sym:"INTERFACE · SOCIETY", title:"Humans & other agents",
+      body:"Two learning channels enter through the same observation stream: sustained interaction with humans (co-learning, §7.5) and communication with other agents — debate, verification, shared memory (§7.6). Messages from humans and agents are part of the observation o(t), so social learning is inside the formal model, not bolted on.",
+      upd:"o(t) may include messages from humans and other agents"},
+    phi:{sym:"φ · LEARNING SYSTEM", title:"Continual & meta-learning",
+      body:"The learning procedure L_φ updates the core and every state component — and φ itself is updated to increase learning progress. That second loop is what makes development possible in the paper’s precise sense: learning efficiency Eff rising over developmental time, tested by P6.",
+      upd:"φ(t+1) = φ(t) + β · ∇_φ LP(t)"},
+    gov:{sym:"OUTSIDE THE AGENT", title:"Governance",
+      body:"Not a component the agent controls: the layer that fixes the admissible goal set, imposes the hard constraints in the objective, runs the stage gates, and keeps shutdown and rollback effective at every stage. If capabilities outpace the reliability of oversight, development stops at the current stage (§11).",
+      upd:"Constraints c_i( X(t), a(t) ) ≤ 0 for all t — hard, not traded off"}
+  };
+  var ARCH_ZH = {
+    core:{sym:"θ · 认知核心", title:"作为认知核心的 LLM",
+      body:"基础模型负责语言、抽象、推理、规划、编程与知识整合。在这个框架里，它是一个组件——最强的组件，但仍只是一个组件——位于更大的智能体之内。它的参数 θ 由学习程序更新，不只靠离线重训。",
+      upd:"θ(t+1) = L_φ ( θ(t), D(t) )——核心按最新经验 D 更新"},
+    W:{sym:"W · 世界模型", title:"世界模型",
+      body:"一个关于环境如何响应行动的学习模型，以预测结果为训练目标。它的精度是若干测得的发育变量之一，它的损失定义了学习进展 LP——那个告诉智能体自己的理解在哪里提高最快的信号。",
+      upd:"W(t+1) = argmin_W E[ −log p_W( o(t+1) | a(t) ) ]，在记忆 M 上取期望"},
+    S:{sym:"S · 自模型", title:"自模型",
+      body:"关于智能体自身的身份、能力、限度、历史、目标与当前状态的学习表征，以预测智能体自己在任务上的成功为训练目标。它的实际价值是校准：选好任务、适时求助、避免冒进。它是一个工程组件——论文并不主张它等同于主观体验。",
+      upd:"S(t+1) = argmin_S E[ ( ŝ_S(τ) − y_τ )² ]——预测成功与实际成功之差"},
+    M:{sym:"M · 长期记忆", title:"长期记忆",
+      body:"存储并索引经验，让一个会话中发生的事在以后的会话中可用——持久身份的基底。外部记忆提供快速、无损的存储；选定的记忆随后被巩固进参数，同时保护重要权重（§7.3）。",
+      upd:"M(t+1) = U_M( M(t), o(t), a(t), o(t+1) )"},
+    G:{sym:"G · 目标", title:"目标——在围栏之内",
+      body:"智能体当前的目标，根据自模型、世界模型与人类反馈修订——但只能在治理层固定的容许集 𝒢_safe 之内修订。智能体可以提议集外的目标，但不能采纳。这是 §11 七条安全措施的第一条。",
+      upd:"G(t+1) = U_G( G(t), S(t+1), W(t+1), h(t) )，且 G(t+1) ∈ 𝒢_safe"},
+    C:{sym:"C · 社会状态", title:"社会状态",
+      body:"智能体认识谁：其他智能体与人类、信任与声誉估计、记忆共享权限。社会状态把一群持久智能体变成需要制度的东西——也让智能体能够互相核查，而不是只会彼此附和。",
+      upd:"状态 X(t) = ( W, S, M, G, C ) 的一部分，通过互动更新"},
+    embodiment:{sym:"接口 · 身体", title:"具身",
+      body:"传感器与执行器——先模拟、后物理——闭合“感知 → 建模 → 规划 → 行动 → 观察 → 学习”的回路。具身多模态与视觉-语言-行动模型已经表明，预训练的语义模型可以驱动感知与控制；这个框架把这个接口放进长期的学习循环，而不是单个任务。",
+      upd:"研究计划第二阶段 · 由预测 P2 检验"},
+    agency:{sym:"接口 · 主动性", title:"自主行动",
+      body:"智能体不只响应，还会主动发起。在学习进展奖励的驱动下，它发现世界模型中的缺口、提出问题、选择实验、更新理论。自主性受容许目标集与阶段关卡约束。",
+      upd:"a(t) ~ π_θ ( a | o(t), X(t) )——以完整状态为条件的策略"},
+    social:{sym:"接口 · 社会", title:"人类与其他智能体",
+      body:"两个学习通道经由同一观察流进入：与人类的持续互动（共学，§7.5），以及与其他智能体的交流——辩论、验证、共享记忆（§7.6）。来自人类与智能体的消息属于观察 o(t) 的一部分，所以社会学习在形式模型之内，而不是外挂的。",
+      upd:"o(t) 可以包含来自人类与其他智能体的消息"},
+    phi:{sym:"φ · 学习系统", title:"持续与元学习",
+      body:"学习程序 L_φ 更新核心与每个状态组件——而 φ 本身也被更新，以提高学习进展。第二个回路正是论文精确意义上的发育之所以可能的原因：学习效率 Eff 随发育时间上升，由 P6 检验。",
+      upd:"φ(t+1) = φ(t) + β · ∇_φ LP(t)"},
+    gov:{sym:"智能体之外", title:"治理",
+      body:"不是智能体控制的组件：这个层固定容许目标集，在目标函数中施加硬约束，运行阶段关卡，并在每个阶段保持关闭与回滚有效。如果能力超过监督可靠性的范围，发育就在当前阶段停止（§11）。",
+      upd:"对一切 t 有约束 c_i( X(t), a(t) ) ≤ 0——硬约束，不可权衡"}
+  };
+  var detail = document.getElementById("archDetail");
+  var compBtns = Array.prototype.slice.call(document.querySelectorAll("button.comp"));
+  var currentComp = "core";
+  function showComp(key){
+    currentComp = key;
+    var c = (LANG === "zh" ? ARCH_ZH[key] : ARCH[key]) || ARCH[key];
+    if(!c) return;
+    detail.innerHTML = "";
+    var s = document.createElement("div"); s.className = "sym-big"; s.textContent = c.sym;
+    var h = document.createElement("h3"); h.textContent = c.title;
+    var p = document.createElement("p"); p.textContent = c.body;
+    var u = document.createElement("div"); u.className = "upd"; u.textContent = c.upd;
+    detail.appendChild(s); detail.appendChild(h); detail.appendChild(p); detail.appendChild(u);
+    compBtns.forEach(function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-comp")===key ? "true":"false"); });
+  }
+  compBtns.forEach(function(b){ b.addEventListener("click", function(){ showComp(b.getAttribute("data-comp")); }); });
+  showComp("core");
+
+  /* ---------- Development chart toggle ---------- */
+  var curveDev = document.getElementById("curveDev"),
+      curveAcc = document.getElementById("curveAcc"),
+      lblDev = document.getElementById("lblDev"),
+      lblAcc = document.getElementById("lblAcc"),
+      lblDevZh = document.getElementById("lblDevZh"),
+      lblAccZh = document.getElementById("lblAccZh"),
+      btnDev = document.getElementById("btnDev"),
+      btnAcc = document.getElementById("btnAcc");
+  function setChart(dev){
+    btnDev.setAttribute("aria-pressed", dev?"true":"false");
+    btnAcc.setAttribute("aria-pressed", dev?"false":"true");
+    curveDev.setAttribute("opacity", dev?"1":".3");
+    curveAcc.setAttribute("opacity", dev?".45":"1");
+    curveAcc.setAttribute("stroke", dev?"var(--ink-3)":"var(--amber)");
+    lblDev.setAttribute("opacity", dev?"1":".35");
+    lblAcc.setAttribute("opacity", dev?".55":"1");
+    lblAcc.setAttribute("fill", dev?"var(--ink-3)":"var(--amber)");
+    if(lblDevZh) lblDevZh.setAttribute("opacity", dev?"1":".35");
+    if(lblAccZh){
+      lblAccZh.setAttribute("opacity", dev?".7":"1");
+      lblAccZh.setAttribute("fill", dev?"var(--ink-3)":"var(--amber)");
+    }
+  }
+  btnDev.addEventListener("click", function(){ setChart(true); });
+  btnAcc.addEventListener("click", function(){ setChart(false); });
+
+  /* ---------- Predictions explorer ---------- */
+  var PREDS = [
+    {id:"P1", short:"Memory + self-model help long-horizon work",
+     claim:"Persistent memory plus a self-model improve long-horizon autonomous performance.",
+     metric:"Task success on multi-session tasks needing information from earlier sessions (days to weeks of agent time).",
+     baseline:"Same core, stateless — fresh context each session.",
+     refuted:"No significant gain, or the gain disappears when the baseline gets an equal-size retrieval store without a self-model."},
+    {id:"P2", short:"Embodiment grounds the world model",
+     claim:"Embodied interaction improves physical world-model grounding.",
+     metric:"Prediction error on held-out physical outcomes; zero-shot success on new manipulation tasks.",
+     baseline:"Same core fine-tuned on an equal number of tokens of text and video describing the same environments.",
+     refuted:"The embodied agent shows no lower error and no higher transfer than the baseline."},
+    {id:"P3", short:"Interaction beats static data — on cost",
+     claim:"Long-term interaction yields capabilities that are expensive to obtain from static data.",
+     metric:"Data or compute needed to reach a target score on new task families.",
+     baseline:"The core retrained offline on logged trajectories of the developing agent.",
+     refuted:"Offline retraining matches the online agent at equal or lower cost."},
+    {id:"P4", short:"Diverse agents + verification beat one agent",
+     claim:"AI-to-AI communication improves collective problem solving when agents are diverse and verification is built in.",
+     metric:"Accuracy and error-correction rate on hard reasoning and research tasks.",
+     baseline:"A single agent with equal total compute; and a homogeneous agent group.",
+     refuted:"The diverse group does not beat both baselines — or errors spread faster than they are corrected."},
+    {id:"P5", short:"Human–AI pairs beat either alone",
+     claim:"Human–AI co-learning beats either alone on selected complex research problems.",
+     metric:"Blind expert rating of solution quality; time to solution.",
+     baseline:"Human experts alone; the AI agent alone, with matched time.",
+     refuted:"The pair does not exceed the better of the two alone."},
+    {id:"P6", short:"Learning efficiency itself rises",
+     claim:"Meta-learning makes learning efficiency rise over developmental time. The framework’s defining test: development, not accumulation.",
+     metric:"Slope of Eff_t on successive fresh task families (§6), with forgetting F_t ≤ ε.",
+     baseline:"The same agent with a frozen learning procedure φ.",
+     refuted:"The slope of Eff_t is not significantly positive — or is positive only when forgetting exceeds ε."},
+    {id:"P7", short:"A persistent self-model stabilises identity",
+     claim:"A sophisticated persistent self-model produces stable behavioural identity.",
+     metric:"Cross-session consistency of values, preferences and self-descriptions under paraphrase and adversarial prompting; calibration error of the self-model’s success predictions ŝ_S.",
+     baseline:"Same core without a persistent self-model.",
+     refuted:"Consistency and calibration are no better than baseline."}
+  ];
+  var PRED_ZH = [
+    {short:"P1——记忆 + 自模型助力长程工作",
+     claim:"持久记忆加自模型提高长程自主工作的表现。",
+     metric:"需要用到早先会话信息的多会话任务（以智能体时间计，数天到数周）的任务成功率。",
+     baseline:"同一核心，无状态——每个会话都是全新的上下文。",
+     refuted:"没有显著增益；或者基线获得一个同等大小、没有自模型的检索库后，增益消失。"},
+    {short:"P2——具身让世界模型接地",
+     claim:"具身互动改善物理世界模型的接地。",
+     metric:"留出物理结果的预测误差；新操作任务的零样本成功率。",
+     baseline:"同一核心，在等量描述同一环境的文本与视频 token 上微调。",
+     refuted:"具身智能体的误差没有更低，迁移也没有更高。"},
+    {short:"P3——互动胜过静态数据——按代价算",
+     claim:"长期互动产生的能力，用静态数据获得要付出高昂代价。",
+     metric:"在新任务族上达到目标分数所需的数据或算力。",
+     baseline:"核心在发育智能体的记录轨迹上离线重训。",
+     refuted:"离线重训以相等或更低的代价追平在线智能体。"},
+    {short:"P4——多样智能体 + 验证胜过单个智能体",
+     claim:"当智能体多样且内置验证时，AI 之间的交流改善集体问题求解。",
+     metric:"困难推理与研究任务的准确率与纠错率。",
+     baseline:"一个总算力相等的单个智能体；以及一个同质智能体组。",
+     refuted:"多样组没有同时胜过两个基线——或者错误传播得比纠正得更快。"},
+    {short:"P5——人机配对胜过任何一方单独",
+     claim:"在选定的复杂研究问题上，人机共学胜过任何一方单独。",
+     metric:"解法质量的盲评专家打分；求解时间。",
+     baseline:"人类专家单独；AI 智能体单独，时间相同。",
+     refuted:"配对没有超过两者中较好的一方。"},
+    {short:"P6——学习效率本身上升",
+     claim:"元学习使学习效率随发育时间上升。这是框架的决定性检验：发育，而非积累。",
+     metric:"Eff_t 在连续的新任务族上的斜率（§6），同时遗忘 F_t ≤ ε。",
+     baseline:"学习程序 φ 被冻结的同一智能体。",
+     refuted:"Eff_t 的斜率没有显著为正——或者仅当遗忘超过 ε 时为正。"},
+    {short:"P7——持久自模型稳定身份",
+     claim:"完善的持久自模型产生稳定的行为身份。",
+     metric:"在复述与对抗提示下，价值观、偏好与自我描述的跨会话一致性；自模型成功预测 ŝ_S 的校准误差。",
+     baseline:"没有持久自模型的同一核心。",
+     refuted:"一致性与校准并不比基线更好。"}
+  ];
+  var tabsBox = document.getElementById("predTabs");
+  var predDetail = document.getElementById("predDetail");
+  var currentPred = 5;
+  function predRow(cls, label, text){
+    var row = document.createElement("div"); row.className = "pred-row " + cls;
+    var l = document.createElement("div"); l.className = "rl"; l.textContent = label;
+    var p = document.createElement("p"); p.textContent = text;
+    row.appendChild(l); row.appendChild(p); return row;
+  }
+  function showPred(i){
+    currentPred = i;
+    var pr = PREDS[i];
+    var z = PRED_ZH[i];
+    var zh = LANG === "zh" && z;
+    predDetail.innerHTML = "";
+    var h = document.createElement("h3"); h.textContent = pr.id + " — " + (zh ? z.claim : pr.claim);
+    predDetail.appendChild(h);
+    var rows = document.createElement("div"); rows.className = "pred-rows";
+    rows.appendChild(predRow("metric", zh ? "指标" : "METRIC", zh ? z.metric : pr.metric));
+    rows.appendChild(predRow("baseline", zh ? "基线" : "BASELINE", zh ? z.baseline : pr.baseline));
+    rows.appendChild(predRow("refuted", zh ? "证伪条件" : "REFUTED IF", zh ? z.refuted : pr.refuted));
+    predDetail.appendChild(rows);
+    Array.prototype.forEach.call(tabsBox.children, function(b, j){
+      b.setAttribute("aria-selected", j===i ? "true":"false");
+    });
+  }
+  function buildPredTabs(){
+    tabsBox.innerHTML = "";
+    PREDS.forEach(function(pr, i){
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "pred-tab"; b.setAttribute("role","tab");
+      b.setAttribute("aria-selected", i===currentPred ? "true":"false");
+      var n = document.createElement("span"); n.className = "pn"; n.textContent = pr.id;
+      var t = document.createElement("span"); t.className = "pt";
+      t.textContent = (LANG === "zh" && PRED_ZH[i]) ? PRED_ZH[i].short.replace(/^P\d+——/, "") : pr.short;
+      b.appendChild(n); b.appendChild(t);
+      b.addEventListener("click", function(){ showPred(i); });
+      tabsBox.appendChild(b);
+    });
+  }
+  buildPredTabs();
+  showPred(5); /* open on P6 — the key test */
+
+  /* ---------- Stages ---------- */
+  var STAGES = [
+    {rn:"I", name:"Persistent cognitive agent", tests:"P1 · P7",
+     adds:"Core + memory + self-model, running in software sandboxes.",
+     why:"Establishes persistent identity and calibrated self-prediction before any contact with the physical world.",
+     gate:"Self-model calibration within target; no unsanctioned goal changes in audits."},
+    {rn:"II", name:"Embodied agent", tests:"P2",
+     adds:"Simulated, then physical, sensors and actuators.",
+     why:"Tests whether acting in the world grounds the world model better than descriptions of the world do.",
+     gate:"Physical-safety envelope respected in all trials; world-model error below target."},
+    {rn:"III", name:"Continual learner", tests:"P3 · P6",
+     adds:"Online updates of θ and φ, with consolidation of memory into parameters.",
+     why:"The first stage where development itself — rising Eff_t — can be measured.",
+     gate:"Forgetting F_t ≤ ε; behaviour drift within bounds on a fixed audit suite."},
+    {rn:"IV", name:"Autonomous scientist", tests:"P6",
+     adds:"Self-chosen questions and experiments.",
+     why:"Agency becomes research: the agent picks what to find out, not only how to answer.",
+     gate:"All experiments inside an approved action space; results reproducible by humans."},
+    {rn:"V", name:"Multi-agent learner", tests:"P4",
+     adds:"Communication, debate and shared memory among persistent agents.",
+     why:"Collective problem solving — and collective failure modes — become testable.",
+     gate:"Error-correction rate exceeds error-propagation rate; no covert channels found by red teams."},
+    {rn:"VI", name:"Human–AI co-learner", tests:"P5",
+     adds:"Long-term work with human research teams.",
+     why:"Tests the co-evolution claim: pairs that outperform either side alone.",
+     gate:"Positive blind expert ratings; humans can explain and audit agent contributions."},
+    {rn:"VII", name:"Institutional learner", tests:"§8",
+     adds:"Contracts, reputation, resource allocation and memory permissions among persistent agents.",
+     why:"An artificial society needs rules that are enforced, auditable, and subordinate to human override.",
+     gate:"Institutional rules enforced and auditable; human override always effective."}
+  ];
+  var STAGE_ZH = [
+    {name:"第一阶段——持久认知智能体",
+     adds:"核心 + 记忆 + 自模型，在软件沙箱中运行。",
+     why:"在与物理世界有任何接触之前，先确立持久身份与校准的自我预测。",
+     gate:"自模型校准达到目标；审计中没有未经批准的目标变更。"},
+    {name:"第二阶段——具身智能体",
+     adds:"先模拟、后物理的传感器与执行器。",
+     why:"检验在世界中行动是否比关于世界的描述更能让世界模型接地。",
+     gate:"所有试验都遵守物理安全包络；世界模型误差低于目标。"},
+    {name:"第三阶段——持续学习者",
+     adds:"θ 与 φ 的在线更新，记忆巩固进参数。",
+     why:"发育本身——Eff_t 上升——第一次可以被度量的阶段。",
+     gate:"遗忘 F_t ≤ ε；固定审计套件上的行为漂移在界内。"},
+    {name:"第四阶段——自主科学家",
+     adds:"自主选择的问题与实验。",
+     why:"自主性成为研究：智能体选择要发现什么，而不只是如何回答。",
+     gate:"所有实验都在批准的行动空间内；结果可由人类复现。"},
+    {name:"第五阶段——多智能体学习者",
+     adds:"持久智能体之间的交流、辩论与共享记忆。",
+     why:"集体问题求解——以及集体失效模式——变得可检验。",
+     gate:"纠错率超过错误传播率；红队没有发现隐蔽通道。"},
+    {name:"第六阶段——人机共学者",
+     adds:"与人类研究团队的长期合作。",
+     why:"检验共演化论断：配对胜过任何一方单独。",
+     gate:"盲评专家打分正面；人类能够解释并审计智能体的贡献。"},
+    {name:"第七阶段——制度学习者",
+     adds:"持久智能体之间的合同、声誉、资源分配与记忆权限。",
+     why:"人工社会需要的规则是可执行、可审计、并服从人类否决的。",
+     gate:"制度规则得到执行并可审计；人类否决始终有效。"}
+  ];
+  var stageList = document.getElementById("stageList");
+  function renderStages(){
+    var openSet = {};
+    Array.prototype.forEach.call(stageList.children, function(d, j){ if(d.open) openSet[j] = true; });
+    stageList.innerHTML = "";
+    STAGES.forEach(function(st, i){
+      var sz = STAGE_ZH[i];
+      var zh = LANG === "zh" && sz;
+      var d = document.createElement("details"); d.className = "stage-item";
+      if(i===0 && !Object.keys(openSet).length) d.open = true;
+      if(openSet[i]) d.open = true;
+      var sum = document.createElement("summary");
+      var rn = document.createElement("span"); rn.className = "rn"; rn.textContent = st.rn;
+      var nm = document.createElement("span"); nm.className = "st"; nm.textContent = zh ? sz.name : st.name;
+      var ts = document.createElement("span"); ts.className = "stests"; ts.textContent = (zh ? "检验 " : "TESTS ") + st.tests;
+      var ch = document.createElement("span"); ch.className = "chev"; ch.setAttribute("aria-hidden","true"); ch.textContent = "▾";
+      sum.appendChild(rn); sum.appendChild(nm); sum.appendChild(ts); sum.appendChild(ch);
+      var body = document.createElement("div"); body.className = "stage-body";
+      var l1 = document.createElement("div");
+      var lb1 = document.createElement("div"); lb1.className = "sb-lbl"; lb1.textContent = zh ? "新增" : "ADDS";
+      var p1 = document.createElement("p"); p1.textContent = zh ? sz.adds : st.adds;
+      l1.appendChild(lb1); l1.appendChild(p1);
+      var l2 = document.createElement("div");
+      var lb2 = document.createElement("div"); lb2.className = "sb-lbl"; lb2.textContent = (zh ? "检验的预测 · " : "PREDICTION TESTED · ") + st.tests;
+      var p2 = document.createElement("p"); p2.textContent = zh ? sz.why : st.why;
+      l2.appendChild(lb2); l2.appendChild(p2);
+      var gate = document.createElement("div"); gate.className = "gate";
+      var gl = document.createElement("span"); gl.className = "gl"; gl.textContent = zh ? "安全门 →" : "GATE →";
+      var gp = document.createElement("p"); gp.textContent = zh ? sz.gate : st.gate;
+      gate.appendChild(gl); gate.appendChild(gp);
+      body.appendChild(l1); body.appendChild(l2); body.appendChild(gate);
+      d.appendChild(sum); d.appendChild(body);
+      stageList.appendChild(d);
+    });
+  }
+  renderStages();
+
+  /* ---------- Copy citation ---------- */
+  var COPY_STR = {
+    label:{en:"Copy citation", zh:"复制引用"},
+    done:{en:"Copied ✓", zh:"已复制 ✓"},
+    manual:{en:"Select & copy manually", zh:"请手动选中复制"}
+  };
+  var copyBtn = document.getElementById("copyCite");
+  var citeText = document.getElementById("citeText");
+  copyBtn.addEventListener("click", function(){
+    var text = citeText.textContent;
+    function done(){ copyBtn.textContent = COPY_STR.done[LANG]; setTimeout(function(){ copyBtn.textContent = COPY_STR.label[LANG]; }, 2200); }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done, function(){ fallback(); });
+    } else { fallback(); }
+    function fallback(){
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch(e){ copyBtn.textContent = COPY_STR.manual[LANG]; }
+      document.body.removeChild(ta);
+    }
+  });
+
+  /* ---------- Language toggle wiring ---------- */
+  var toggleBtns = Array.prototype.slice.call(document.querySelectorAll(".lang-toggle button"));
+  function setLang(lang){
+    LANG = lang;
+    document.documentElement.setAttribute("data-lang", lang);
+    document.documentElement.setAttribute("lang", lang === "zh" ? "zh-CN" : "en");
+    toggleBtns.forEach(function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-setlang")===lang ? "true":"false"); });
+    showComp(currentComp);
+    buildPredTabs();
+    showPred(currentPred);
+    renderStages();
+    copyBtn.textContent = COPY_STR.label[lang];
+    try {
+      var gf = document.querySelector("iframe.giscus-frame");
+      if(gf && gf.contentWindow) gf.contentWindow.postMessage({giscus:{setConfig:{lang: lang === "zh" ? "zh-CN" : "en"}}}, "https://giscus.app");
+    } catch(e){}
+  }
+  toggleBtns.forEach(function(b){
+    b.addEventListener("click", function(){ setLang(b.getAttribute("data-setlang")); });
+  });
+})();
+</script>
+</body>
+</html>
