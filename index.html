@@ -432,6 +432,15 @@
   .zh-q{font-size:.62em;margin-top:10px}
   .byline .zh{display:inline;margin:0 0 0 10px}
   .deflist .zh,.vcard li .zh,li .zh{font-size:.88em}
+  .video-card{
+    background:var(--bg-raised);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;box-shadow:var(--shadow);margin-top:6px;
+  }
+  .video-frame{position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#000}
+  .video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+  .video-meta{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between;margin-top:14px}
+  .video-meta .vt{font-weight:600;font-size:1rem}
+  .video-meta .vd{color:var(--ink-2);font-size:.9rem}
   .visitor-badge{margin-top:18px}
   .visitor-badge img{vertical-align:middle}
 
@@ -497,6 +506,7 @@
 <nav class="top" aria-label="Sections">
   <div class="wrap">
    <div class="links">
+    <a href="#video"><span class="en">Watch</span><span class="zh inl">观看视频</span></a>
     <a href="#distinction">The distinction 区别</a>
     <a href="#definition">Definition 定义</a>
     <a href="#architecture">Architecture 架构</a>
@@ -544,6 +554,10 @@
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Read the revised paper (PDF) 阅读修订版论文（PDF）
       </a>
+      <a class="btn ghost" href="https://youtu.be/6VB-nb1UMC0" target="_blank" rel="noopener">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.52.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z"/></svg>
+        <span class="en">Watch the video — From LLM to Baby ASI</span><span class="zh inl">观看视频——从 LLM 到 Baby ASI</span>
+      </a>
       <a class="btn ghost" href="#predictions">Skip to the seven predictions 直达七条预测</a>
     </div>
 
@@ -556,6 +570,30 @@
 </header>
 
 <main class="wrap">
+
+  <!-- ============ VIDEO ============ -->
+  <section id="video" style="padding-top:36px">
+    <div class="sec-head">
+      <div class="sec-num">VIDEO · 视频</div>
+      <h2><span class="en">Watch: From LLM to Baby ASI</span><span class="zh zh-h">观看：从大语言模型到 Baby ASI</span></h2>
+      <p><span class="en">A 47-second teaser for the paper — the idea in motion, from a static model to an agent that grows.</span><span class="zh">论文的 47 秒预告片——把这个想法动起来：从静态模型，到会成长的智能体。</span></p>
+    </div>
+    <div class="video-card">
+      <div class="video-frame">
+        <iframe src="https://www.youtube.com/embed/6VB-nb1UMC0" title="From LLM to Baby ASI — video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      </div>
+      <div class="video-meta">
+        <div>
+          <div class="vt"><span class="en">From LLM to Baby ASI</span><span class="zh inl">从 LLM 到 Baby ASI</span></div>
+          <div class="vd"><span class="en">Teaser video · 47 seconds</span><span class="zh inl">预告视频 · 47 秒</span></div>
+        </div>
+        <a class="btn ghost" href="https://youtu.be/6VB-nb1UMC0" target="_blank" rel="noopener">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.52.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z"/></svg>
+          <span class="en">Watch on YouTube</span><span class="zh inl">在 YouTube 观看</span>
+        </a>
+      </div>
+    </div>
+  </section>
 
   <!-- ============ 1 THE DISTINCTION ============ -->
   <section id="distinction">
