@@ -923,7 +923,7 @@
       <button type="button" id="copyCite">Copy citation 复制引用</button>
     </div>
     <p class="small" style="margin-top:16px">Acknowledgment, as in the paper: the author used AI language-model assistants (ChatGPT, OpenAI; Claude, Anthropic) for drafting, editing and literature organisation. The author reviewed all content and takes full responsibility for it. AI tools are not listed as authors.<span class="zh">致谢（与论文相同）：作者在起草、编辑与文献整理中使用了 AI 语言模型助手（ChatGPT，OpenAI；Claude，Anthropic）。作者审阅了全部内容并承担全部责任。AI 工具不列为作者。</span></p>
-    <p class="visitor-badge">Visitors · 访问量：<span id="gc-count"></span></p>
+    <p class="visitor-badge"><span class="en">Visitors</span><span class="zh inl">访问量：</span> <span id="gc-count"></span></p>
     <script>
       (function(){
         function showCount(){
@@ -958,7 +958,7 @@
       acceptNode: function(node){
         if(!node.nodeValue || !CJK.test(node.nodeValue) || !/[A-Za-z]/.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
         var p = node.parentElement;
-        if(!p || p.closest("script,style,svg,.zh,.lang-toggle")) return NodeFilter.FILTER_REJECT;
+        if(!p || p.closest("script,style,svg,.zh,.lang-toggle,.visitor-badge")) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       }
     });
@@ -985,12 +985,13 @@
     var parents = [];
     document.querySelectorAll(".zh").forEach(function(z){
       var p = z.parentElement;
-      if(p && parents.indexOf(p) === -1 && !p.closest("svg")) parents.push(p);
+      if(p && parents.indexOf(p) === -1 && !p.closest("svg") && !p.closest(".visitor-badge")) parents.push(p);
     });
     parents.forEach(function(p){
       var toWrap = [];
       Array.prototype.forEach.call(p.childNodes, function(n){
         if(n.nodeType === 1 && (n.classList.contains("zh") || n.classList.contains("en") || n.classList.contains("sym"))) return;
+        if(n.nodeType === 1 && (n.id === "gc-count" || n.querySelector && n.querySelector("#gc-count"))) return;
         toWrap.push(n);
       });
       if(!toWrap.length) return;
